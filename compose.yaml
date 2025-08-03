@@ -1,0 +1,11 @@
+name: photogram
+services:
+  frontend:
+    container_name: photogram-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "8080:80"
+    environment:
+      - NODE_ENV=production
