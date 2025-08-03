@@ -1,7 +1,7 @@
 <!-- ModalManager.vue -->
 <script setup lang="ts">
 import { useModalStore } from "@/stores/modal";
-import ConfirmModal from "@/components/modals/ConfirmModal.vue";
+import ConfirmModal from "@/components/modals/ConfirmMessageModal.vue";
 import ConfirmPasswordModal from "@/components/modals/ConfirmPasswordModal.vue";
 const modalStore = useModalStore();
 
