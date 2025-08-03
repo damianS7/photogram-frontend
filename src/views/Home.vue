@@ -3,12 +3,16 @@ import { ref } from "vue";
 import LoadingSpinner from "@/components/spinner/LoadingSpinner.vue";
 import { useSpinnerStore } from "@/stores/spinner";
 import { useModalStore } from "@/stores/modal";
+import Alert from "@/components/Alert.vue";
+import { AlertType } from "@/types/AlertType";
 const modalStore = useModalStore();
 const screenSpinner = useSpinnerStore();
 
 const spinnerMini1Loading = ref(false);
 const spinnerMini2Loading = ref(false);
 const spinnerMini3Loading = ref(false);
+
+const alert = ref();
 
 async function saveSettings() {
   // const confirmModal = await modalStore.open("ConfirmModal", {
@@ -44,6 +48,14 @@ async function saveSettings() {
         Show Mini Spinner 3
       </button>
       <LoadingSpinner v-if="spinnerMini3Loading" :size="6" />
+
+      <Alert class="mb-4" ref="alert" />
+      <button
+        class="btn btn-primary btn-lg"
+        @click="alert.showMessage('Field successfully updated.', AlertType.SUCCESS)"
+      >
+        Show alert
+      </button>
 
       <button class="btn btn-primary btn-lg" @click="saveSettings">Modal Store</button>
     </div>
