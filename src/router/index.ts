@@ -53,7 +53,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/admin",
     component: AdminLayout,
-    meta: { requiresAuth: true, role: "admin" },
+    meta: { requiresAuth: true, role: "ADMIN" },
     redirect: "/admin/dashboard",
     children: [
       {
@@ -77,25 +77,24 @@ const router = createRouter({
 
 router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore();
+  const role = authStore.getPayload()?.role || "USER";
   const isAuthenticated = authStore.isAuthenticated;
 
   // Check if the route requires authentication
   if (to.meta.requiresAuth && !isAuthenticated) {
     // if not authenticated, redirect to login
-    next({
+    return next({
       path: "/auth/login",
       query: { redirect: to.fullPath },
     });
   }
 
   // Check if the route requires admin role
-  // FIXME: Extract role from token
-  // if (to.meta.role && to.meta.role !== "admin") {
-  //   next({
-  //     path: "/",
-  //     query: { redirect: to.fullPath },
-  //   });
-  // }
+  if (to.meta.role && to.meta.role !== role) {
+    return next({
+      path: "/",
+    });
+  }
 
   // If the user is authenticated, allow access to the route
   next();

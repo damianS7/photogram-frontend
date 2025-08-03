@@ -1,5 +1,7 @@
 import type { Customer } from "@/types/Customer";
 import { defineStore } from "pinia";
+import { jwtDecode } from "jwt-decode";
+import type { JwtPayload } from "@/types/JwtPayload";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -107,6 +109,10 @@ export const useAuthStore = defineStore("auth", {
         });
       }
       this.initialized = true;
+    },
+    getPayload() {
+      const token = localStorage.getItem("token");
+      return token ? jwtDecode<JwtPayload>(token) : null;
     },
   },
 });
