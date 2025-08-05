@@ -33,7 +33,7 @@ function saveSettings() {
 }
 </script>
 <template>
-  <div class="shadow-none rounded">
+  <div class="main-container shadow-none rounded">
     <section
       class="sm:flex items-center justify-between text-xl font-bold border-b border-gray-300 p-1 px-2"
     >
