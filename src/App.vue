@@ -33,7 +33,8 @@ onMounted(async () => {
 
 header,
 nav,
-.main-container {
+.main-container,
+.container {
   @apply bg-gray-200;
 }
 
@@ -57,8 +58,10 @@ nav a:hover {
 }
 
 nav a.router-link-exact-active {
+  @apply rounded;
   @apply font-bold;
   @apply text-blue-500;
+  @apply bg-gray-300;
 }
 
 .btn {
