@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
-import HomeView from "@/views/Home.vue";
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import AdminLayout from "@/layouts/AdminLayout.vue";
@@ -8,6 +7,8 @@ import LoginView from "@/views/auth/Login.vue";
 import RegisterView from "@/views/auth/Register.vue";
 import ResetPasswordView from "@/views/auth/ResetPassword.vue";
 import SettingsView from "@/views/settings/Settings.vue";
+import ProfileView from "@/views/profile/Profile.vue";
+import FeedView from "@/views/feed/Feed.vue";
 import { useAuthStore } from "@/stores/auth";
 
 const routes: Array<RouteRecordRaw> = [
@@ -18,8 +19,19 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: "/",
-        name: "home",
-        component: HomeView,
+        name: "feed",
+        component: FeedView,
+      },
+      {
+        path: "/@:username?",
+        name: "user-feed",
+        component: FeedView,
+        props: true, // allows passing route params as props
+      },
+      {
+        path: "profile",
+        name: "profile",
+        component: ProfileView,
       },
       {
         path: "settings",
