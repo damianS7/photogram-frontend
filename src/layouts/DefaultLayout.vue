@@ -51,7 +51,7 @@ onUnmounted(() => {
 <template>
   <main v-if="initialized" class="flex flex-col">
     <Header />
-    <div class="p-6">
+    <div class="p-6 h-full">
       <router-view />
     </div>
   </main>

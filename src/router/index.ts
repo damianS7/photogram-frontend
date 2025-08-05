@@ -3,13 +3,13 @@ import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import AdminLayout from "@/layouts/AdminLayout.vue";
 import DashboardView from "@/views/admin/Dashboard.vue";
-import LoginView from "@/views/auth/Login.vue";
-import RegisterView from "@/views/auth/Register.vue";
-import ResetPasswordView from "@/views/auth/ResetPassword.vue";
+import LoginView from "@/views/auth/LoginView.vue";
+import RegisterView from "@/views/auth/RegisterView.vue";
+import ResetPasswordView from "@/views/auth/ResetPasswordView.vue";
 import SettingsLayout from "@/layouts/SettingsLayout.vue";
-import ProfileView from "@/views/settings/profile/Profile.vue";
-import AccountView from "@/views/settings/account/Account.vue";
-import FeedView from "@/views/feed/Feed.vue";
+import ProfileView from "@/views/settings/profile/ProfileView.vue";
+import AccountView from "@/views/settings/account/AccountView.vue";
+import FeedView from "@/views/feed/FeedView.vue";
 import { useAuthStore } from "@/stores/auth";
 
 const routes: Array<RouteRecordRaw> = [
@@ -34,38 +34,38 @@ const routes: Array<RouteRecordRaw> = [
         name: "profile",
         component: ProfileView,
       },
+    ],
+  },
+  {
+    path: "/settings",
+    name: "settings",
+    component: SettingsLayout,
+    redirect: "/settings/profile",
+    children: [
       {
-        path: "settings",
-        name: "settings",
-        component: SettingsLayout,
-        redirect: "/settings/profile",
-        children: [
-          {
-            path: "profile",
-            name: "settings-profile",
-            component: ProfileView,
-          },
-          {
-            path: "account",
-            name: "settings-account",
-            component: AccountView,
-          },
-          {
-            path: "privacy",
-            name: "settings-privacy",
-            component: AccountView,
-          },
-          {
-            path: "notifications",
-            name: "settings-notifications",
-            component: AccountView,
-          },
-          {
-            path: "security",
-            name: "settings-security",
-            component: AccountView,
-          },
-        ],
+        path: "profile",
+        name: "settings-profile",
+        component: ProfileView,
+      },
+      {
+        path: "account",
+        name: "settings-account",
+        component: AccountView,
+      },
+      {
+        path: "privacy",
+        name: "settings-privacy",
+        component: AccountView,
+      },
+      {
+        path: "notifications",
+        name: "settings-notifications",
+        component: AccountView,
+      },
+      {
+        path: "security",
+        name: "settings-security",
+        component: AccountView,
       },
     ],
   },
