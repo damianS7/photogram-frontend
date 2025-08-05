@@ -33,7 +33,7 @@ function saveSettings() {
 }
 </script>
 <template>
-  <div class="main-container shadow-none rounded">
+  <div class="shadow-none rounded overflow-hidden box-border h-full">
     <section
       class="sm:flex items-center justify-between text-xl font-bold border-b border-gray-300 p-1 px-2"
     >
@@ -43,9 +43,25 @@ function saveSettings() {
       </button>
     </section>
 
-    <section class="container grid grid-cols-[200px_1fr] gap-4 p-4">
+    <section class="grid grid-cols-[200px_1fr] gap-4 p-4 h-full overflow-scroll">
       <!-- Menú vertical -->
       <aside class="bg-gray-100 rounded-lg shadow p-4 flex flex-col gap-3">
+        <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Inicio</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Perfil</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Ajustes</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Salir</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Inicio</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Perfil</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Ajustes</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Salir</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Inicio</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Perfil</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Ajustes</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Salir</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Inicio</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Perfil</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Ajustes</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Salir</a>
         <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Inicio</a>
         <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Perfil</a>
         <a href="#" class="text-gray-700 hover:text-blue-600 font-semibold">Ajustes</a>

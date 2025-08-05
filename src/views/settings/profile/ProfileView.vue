@@ -215,7 +215,7 @@ async function updateEmail(index: number, newEmail: string) {
 onMounted(() => {});
 </script>
 <template>
-  <div class="grid">
+  <div class="grid h-full overflow-hidden">
     <section
       class="sm:flex items-center justify-between text-xl font-bold border-b border-gray-300 p-1 px-2"
     >
