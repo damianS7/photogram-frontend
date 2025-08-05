@@ -6,8 +6,9 @@ import DashboardView from "@/views/admin/Dashboard.vue";
 import LoginView from "@/views/auth/Login.vue";
 import RegisterView from "@/views/auth/Register.vue";
 import ResetPasswordView from "@/views/auth/ResetPassword.vue";
-import SettingsView from "@/views/settings/Settings.vue";
-import ProfileView from "@/views/profile/Profile.vue";
+import SettingsLayout from "@/layouts/SettingsLayout.vue";
+import ProfileView from "@/views/settings/profile/Profile.vue";
+import AccountView from "@/views/settings/account/Account.vue";
 import FeedView from "@/views/feed/Feed.vue";
 import { useAuthStore } from "@/stores/auth";
 
@@ -36,7 +37,35 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "settings",
         name: "settings",
-        component: SettingsView,
+        component: SettingsLayout,
+        redirect: "/settings/profile",
+        children: [
+          {
+            path: "profile",
+            name: "settings-profile",
+            component: ProfileView,
+          },
+          {
+            path: "account",
+            name: "settings-account",
+            component: AccountView,
+          },
+          {
+            path: "privacy",
+            name: "settings-privacy",
+            component: AccountView,
+          },
+          {
+            path: "notifications",
+            name: "settings-notifications",
+            component: AccountView,
+          },
+          {
+            path: "security",
+            name: "settings-security",
+            component: AccountView,
+          },
+        ],
       },
     ],
   },
