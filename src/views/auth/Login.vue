@@ -60,34 +60,45 @@ const onFormSubmit = async () => {
 };
 </script>
 <template>
-  <div class="bg-white p-6 rounded-lg shadow-md">
-    <form :resolver="resolver" @submit.prevent="onFormSubmit" class="flex flex-col gap-4">
-      <div class="flex flex-col gap-1">
-        <input
-          v-model="form.email"
-          name="email"
-          type="email"
-          placeholder="Email"
-          class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <span v-if="errors?.email" class="text-sm text-red-500">{{ errors.email[0] }}</span>
-      </div>
+  <div>
+    <div class="w-full text-center mb-8">
+      <span class="logo" to="/"> Photogram </span>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <form :resolver="resolver" @submit.prevent="onFormSubmit" class="flex flex-col gap-4">
+        <div class="flex flex-col gap-1">
+          <input
+            v-model="form.email"
+            name="email"
+            type="email"
+            placeholder="Email"
+            class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <span v-if="errors?.email" class="text-sm text-red-500">{{ errors.email[0] }}</span>
+        </div>
 
-      <div class="flex flex-col gap-1">
-        <input
-          v-model="form.password"
-          name="password"
-          type="password"
-          placeholder="Password"
-          class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <span v-if="errors?.password" class="text-sm text-red-500">{{ errors.password[0] }}</span>
-      </div>
+        <div class="flex flex-col gap-1">
+          <input
+            v-model="form.password"
+            name="password"
+            type="password"
+            placeholder="Password"
+            class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <span v-if="errors?.password" class="text-sm text-red-500">{{ errors.password[0] }}</span>
+        </div>
 
-      <div class="flex flex-col gap-1">
-        <button type="submit" class="btn btn-sm btn-blue">Sign in</button>
-        <span v-if="errors?.form" class="text-sm text-red-500">{{ errors.form }}</span>
-      </div>
-    </form>
+        <div class="flex flex-col gap-1">
+          <button type="submit" class="btn btn-sm btn-blue">Sign in</button>
+          <span v-if="errors?.form" class="text-sm text-red-500">{{ errors.form }}</span>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
+<style scoped>
+.logo {
+  font-family: "Grand Hotel", cursive;
+  font-size: 3.6rem;
+}
+</style>
