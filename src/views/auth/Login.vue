@@ -4,8 +4,6 @@ import { z } from "zod";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-import { useSpinnerStore } from "@/stores/spinner";
-const screenSpinner = useSpinnerStore();
 const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
@@ -54,7 +52,6 @@ const onFormSubmit = async () => {
   await authStore
     .login(email, password)
     .then(() => {
-      screenSpinner.show();
       redirectBackToLastPage();
     })
     .catch((error) => {
