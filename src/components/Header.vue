@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { useCustomerStore } from "@/stores/customer";
-import { Bell, Settings } from "lucide-vue-next";
+import { Bell, Settings, LogOut } from "lucide-vue-next";
 import ProfilePhoto from "@/components/ProfilePhoto.vue";
+import { useAuthStore } from "@/stores/auth";
 const customerStore = useCustomerStore();
+const authStore = useAuthStore();
+function logout() {
+  authStore.logout();
+}
 </script>
 <template>
   <header class="flex items-center gap-2 w-full shadow p-2">
@@ -27,6 +32,9 @@ const customerStore = useCustomerStore();
         <Bell :size="26" />
         <router-link to="/settings">
           <Settings :size="26" />
+        </router-link>
+        <router-link to="/auth/login" @click.prevent="logout">
+          <LogOut :size="26" />
         </router-link>
       </div>
     </div>
