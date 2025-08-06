@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useCustomerStore } from "@/stores/customer";
-import UserPageHeader from "./components/UserPageHeader.vue";
-import UserPosts from "./components/UserPosts.vue";
+import FeedHeader from "./components/FeedHeader.vue";
+import FeedPostList from "./components/FeedPostList.vue";
 import { useRoute } from "vue-router";
 defineProps<{
   username: string;
@@ -16,6 +16,6 @@ if (!route.params.username) {
 const username = route.params.username as string;
 </script>
 <template>
-  <UserPageHeader :username="username" />
-  <UserPosts :username="username" />
+  <FeedHeader :username="username" />
+  <FeedPostList :username="username" />
 </template>

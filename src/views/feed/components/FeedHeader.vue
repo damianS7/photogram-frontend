@@ -13,7 +13,7 @@ const customerStore = useCustomerStore();
     <!-- Columna 2: 3 filas -->
     <div class="flex flex-col justify-center gap-2">
       <div class="flex items-center gap-2">
-        <b class="uppercase">{{ customerStore.customer.profile?.firstName }}</b>
+        <b class="uppercase">{{ customerStore.customer.profile?.username }}</b>
         <button class="btn btn-sm btn-primary">Follow</button>
         <button class="btn btn-sm btn-primary">Send message</button>
       </div>
