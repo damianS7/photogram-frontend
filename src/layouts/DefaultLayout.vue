@@ -30,7 +30,7 @@ function sleep(ms: number): Promise<void> {
 }
 
 async function wait(ms: number) {
-  await sleep(ms); // Espera 2 segundos
+  await sleep(ms);
 }
 
 onMounted(async () => {
