@@ -5,7 +5,9 @@ import { useSettingStore } from "@/stores/setting";
 import Sidebar from "@/views/settings/components/Sidebar.vue";
 import { useRouter } from "vue-router";
 import Header from "@/components/Header.vue";
+import { useCustomerStore } from "@/stores/customer";
 const authStore = useAuthStore();
+const customerStore = useCustomerStore();
 const settingStore = useSettingStore();
 const router = useRouter();
 const tokenValidationInterval = 30 * 1000; // 30s
@@ -27,7 +29,7 @@ function sleep(ms: number): Promise<void> {
 }
 
 async function wait(ms: number) {
-  await sleep(ms); // Espera 2 segundos
+  await sleep(ms);
 }
 
 onMounted(async () => {
@@ -35,6 +37,8 @@ onMounted(async () => {
     await checkIfTokenIsValid();
   }, tokenValidationInterval);
 
+  await customerStore.initialize();
+  await settingStore.initialize();
   initialized.value = true;
 });
 onUnmounted(() => {
