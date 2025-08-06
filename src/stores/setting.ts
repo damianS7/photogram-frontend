@@ -58,6 +58,7 @@ export const useSettingStore = defineStore("setting", {
     },
 
     async initialize() {
+      if (this.initialized) return;
       const token = localStorage.getItem("token");
       if (!token) return;
 

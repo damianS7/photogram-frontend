@@ -18,6 +18,7 @@ export const useCustomerStore = defineStore("customer", {
 
   actions: {
     async initialize() {
+      if (this.initialized) return;
       const token = localStorage.getItem("token");
       if (!token) return;
 
