@@ -20,7 +20,7 @@ function logout() {
         <span class="">
           Welcome
           <b class="uppercase">
-            <router-link :to="`/@${customerStore.customer.profile.firstName}`">
+            <router-link :to="`/@${customerStore.customer.profile.username}`">
               {{ customerStore.customer.profile?.firstName }}
             </router-link>
           </b>
