@@ -70,7 +70,7 @@ export const customerService = {
   },
 
   async getPhoto(filename: string): Promise<Blob> {
-    const response = await fetch(`${API}/customers/me/profile/photo/${filename}`, {
+    const response = await fetch(`${API}/customers/profile/photo/${filename}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -102,5 +102,20 @@ export const customerService = {
     }
 
     return await response.blob();
+  },
+
+  async usernameExists(username: string): Promise<boolean> {
+    const response = await fetch(`${API}/customers/profile/check-username/${username}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    if (response.status === 200) {
+      return true;
+    }
+
+    return false;
   },
 };
