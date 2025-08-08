@@ -3,7 +3,7 @@ import { onMounted, onUnmounted, ref } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useCustomerStore } from "@/stores/customer";
 import { useSettingStore } from "@/stores/setting";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import Header from "@/components/Header.vue";
 import { useSpinnerStore } from "@/stores/spinner";
 const screenSpinner = useSpinnerStore();
