@@ -5,6 +5,8 @@ import ConfirmModal from "@/components/modals/ConfirmMessageModal.vue";
 import ConfirmPasswordModal from "@/components/modals/ConfirmPasswordModal.vue";
 import FeedPostCreate from "@/views/feed/components/FeedPostCreate.vue";
 import FeedPostItem from "@/views/feed/components/FeedPostItem.vue";
+import FollowersList from "@/views/feed/follow/FollowersList.vue";
+import FollowedList from "@/views/feed/follow/FollowedList.vue";
 const modalStore = useModalStore();
 
 const modals = {
@@ -12,6 +14,8 @@ const modals = {
   ConfirmPasswordModal,
   FeedPostCreate,
   FeedPostItem,
+  FollowersList,
+  FollowedList,
 };
 </script>
 
