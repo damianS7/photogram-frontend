@@ -27,7 +27,9 @@ function logout() {
         </span>
 
         <span>
-          <ProfilePhoto class="rounded-full w-6 h-6 bg-gray-300" />
+          <router-link :to="`/settings/profile`">
+            <ProfilePhoto class="rounded-full w-6 h-6 bg-gray-300" />
+          </router-link>
         </span>
         <Bell :size="26" />
         <router-link to="/settings">
