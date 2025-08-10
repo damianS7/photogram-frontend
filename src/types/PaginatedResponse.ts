@@ -1,4 +1,4 @@
-export interface Pagination {
+export interface PaginatedResponse {
   content: any[];
   pageable: {
     pageNumber: number;

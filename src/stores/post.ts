@@ -2,13 +2,13 @@
 import { defineStore } from "pinia";
 import { postService } from "@/services/postService";
 import type { Post } from "@/types/Post";
-import { computed, ref, type Ref } from "vue";
-import type { Pagination } from "@/types/Pagination";
+import { computed, ref } from "vue";
+import type { PaginatedResponse } from "@/types/PaginatedResponse";
 
 export const usePostStore = defineStore("post", () => {
   const customerId = 0;
   const posts = ref<Post[]>([]);
-  const pagination = ref<Pagination>();
+  const pagination = ref<PaginatedResponse>();
 
   // getters
   const getPosts = computed(() => posts.value);
@@ -23,13 +23,13 @@ export const usePostStore = defineStore("post", () => {
     if (!token) return posts.value;
 
     try {
-      const pPosts = (await postService.getPosts(username, page)) as Pagination;
+      const pPosts = (await postService.getPosts(username, page)) as PaginatedResponse;
       for (const post of pPosts.content as Post[]) {
         const resource = await postService.getPhoto(post.photoFilename);
         post.photoFilename = URL.createObjectURL(resource);
       }
 
-      if (posts.value.length > 0) {
+      if (page && posts.value.length > 0) {
         pagination.value = pPosts;
         posts.value.push(...pPosts.content);
       } else {
