@@ -8,6 +8,8 @@ import { usePostStore } from "@/stores/post";
 import { useModalStore } from "@/stores/modal";
 import { useFeedStore } from "@/stores/feed";
 import { customerService } from "@/services/customerService";
+import { useAuth } from "@/composables/useAuth";
+const { isCurrentUserOwner } = useAuth();
 
 defineProps<{
   username?: string;
@@ -55,9 +57,9 @@ async function loadFeed() {
 }
 </script>
 <template>
-  <div v-if="usernameExist && !loading">
+  <div v-if="usernameExist && !loading && feed">
     <FeedHeader v-if="feed" :feed="feed" />
-    <div class="text-center">
+    <div v-if="isCurrentUserOwner(feed.customerId)" class="text-center">
       <button class="bg-blue-600 py-2 px-4 text-white font-bold rounded-full" @click="createPost">
         +
       </button>

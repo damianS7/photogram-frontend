@@ -3,15 +3,11 @@ import { useCustomerStore } from "@/stores/customer";
 import FollowButton from "@/components/follow/FollowButton.vue";
 import type { Feed } from "@/types/Feed";
 import { useModalStore } from "@/stores/modal";
+import { useAuth } from "@/composables/useAuth";
+const { isCurrentUserOwner } = useAuth();
 const props = defineProps<{
   feed: Feed;
 }>();
-
-function isLoggedUserFeed() {
-  const loggedUserCustomerId = useCustomerStore().customer.id;
-
-  return loggedUserCustomerId === props.feed.customerId ? true : false;
-}
 
 const modalStore = useModalStore();
 async function showFollowers() {
@@ -41,7 +37,7 @@ async function showFollowing() {
     <div class="flex flex-col justify-center gap-2">
       <div class="flex items-center gap-2">
         <b class="uppercase">@{{ feed.username }}</b>
-        <div v-if="!isLoggedUserFeed()" class="flex items-center gap-2">
+        <div v-if="!isCurrentUserOwner(feed.customerId)" class="flex items-center gap-2">
           <FollowButton :customer-id="feed.customerId" />
           <button class="btn btn-sm btn-primary">Send message</button>
         </div>
@@ -50,7 +46,7 @@ async function showFollowing() {
         <span
           >Posts: <b>{{ feed.totalPosts }}</b>
         </span>
-        <slot v-if="isLoggedUserFeed()">
+        <slot v-if="isCurrentUserOwner(feed.customerId)">
           <span>
             <a @click="showFollowers" href="#"
               >Followers:&nbsp;<b>{{ feed.followers }}</b>
