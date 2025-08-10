@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { useCustomerStore } from "@/stores/customer";
 import FeedHeader from "./components/FeedHeader.vue";
-import FeedPostList from "./components/FeedPostList.vue";
+import PostList from "@/components/post/PostList.vue";
 import { useRoute } from "vue-router";
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { usePostStore } from "@/stores/post";
-import type { Post } from "@/types/Post";
 import { useModalStore } from "@/stores/modal";
-import type { Feed } from "@/types/Feed";
 import { useFeedStore } from "@/stores/feed";
 import { customerService } from "@/services/customerService";
 
@@ -38,7 +36,7 @@ watch(
 );
 
 async function createPost() {
-  const post = await modalStore.open("FeedPostCreate", {
+  const post = await modalStore.open("PostCreate", {
     title: "Create a new post",
   });
 }
@@ -64,7 +62,7 @@ async function loadFeed() {
         +
       </button>
     </div>
-    <FeedPostList v-if="posts" :posts="posts" />
+    <PostList v-if="posts" :posts="posts" />
   </div>
   <div v-if="!usernameExist && !loading">Username not found</div>
 </template>

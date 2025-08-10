@@ -2,6 +2,7 @@
 import { useModalStore } from "@/stores/modal";
 import { ref } from "vue";
 import { usePostStore } from "@/stores/post";
+import { useFeedStore } from "@/stores/feed";
 
 defineProps<{
   title: string;
@@ -9,6 +10,7 @@ defineProps<{
 }>();
 
 const postStore = usePostStore();
+const feedStore = useFeedStore();
 const modalStore = useModalStore();
 
 function confirm() {
@@ -44,8 +46,11 @@ async function handleSubmit() {
   //   caption: caption.value,
   // });
 
-  const filename = await postStore.uploadPhoto(image.value);
-  postStore.createPost(filename, caption.value);
+  await postStore.uploadPhoto(image.value).then((filename) => {
+    postStore.createPost(filename, caption.value).then((post) => {
+      feedStore.updateFeed({ totalPosts: feedStore.feed.totalPosts + 1 });
+    });
+  });
 
   // clean
   isSubmitting.value = false;

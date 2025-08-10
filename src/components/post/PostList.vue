@@ -7,7 +7,7 @@ const props = defineProps<{
 
 const modalStore = useModalStore();
 async function showPost(post: Post) {
-  await modalStore.open("FeedPostItem", {
+  await modalStore.open("PostItem", {
     post,
   });
 }

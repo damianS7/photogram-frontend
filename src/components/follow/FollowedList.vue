@@ -2,7 +2,7 @@
 import { useFollowStore } from "@/stores/follow";
 import { useModalStore } from "@/stores/modal";
 import { computed, onMounted } from "vue";
-import FollowButton from "./components/FollowButton.vue";
+import FollowButton from "./FollowButton.vue";
 import type { Follow } from "@/types/Follow";
 const props = defineProps<{
   customerId: number;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useCustomerStore } from "@/stores/customer";
-import FollowButton from "../follow/components/FollowButton.vue";
+import FollowButton from "@/components/follow/FollowButton.vue";
 import type { Feed } from "@/types/Feed";
 import { useModalStore } from "@/stores/modal";
 const props = defineProps<{

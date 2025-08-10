@@ -3,17 +3,17 @@
 import { useModalStore } from "@/stores/modal";
 import ConfirmModal from "@/components/modals/ConfirmMessageModal.vue";
 import ConfirmPasswordModal from "@/components/modals/ConfirmPasswordModal.vue";
-import FeedPostCreate from "@/views/feed/components/FeedPostCreate.vue";
-import FeedPostItem from "@/views/feed/components/FeedPostItem.vue";
-import FollowersList from "@/views/feed/follow/FollowersList.vue";
-import FollowedList from "@/views/feed/follow/FollowedList.vue";
+import PostCreate from "@/components/post/PostCreate.vue";
+import PostItem from "@/components/post/PostItem.vue";
+import FollowersList from "@/components/follow/FollowersList.vue";
+import FollowedList from "@/components/follow/FollowedList.vue";
 const modalStore = useModalStore();
 
 const modals = {
   ConfirmModal,
   ConfirmPasswordModal,
-  FeedPostCreate,
-  FeedPostItem,
+  PostCreate,
+  PostItem,
   FollowersList,
   FollowedList,
 };
