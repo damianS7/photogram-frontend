@@ -3,7 +3,7 @@ import { useCustomerStore } from "@/stores/customer";
 import FeedHeader from "./components/FeedHeader.vue";
 import PostList from "@/components/post/PostList.vue";
 import { useRoute } from "vue-router";
-import { computed, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { usePostStore } from "@/stores/post";
 import { useModalStore } from "@/stores/modal";
 import { useFeedStore } from "@/stores/feed";
@@ -14,6 +14,8 @@ const { isCurrentUserOwner } = useAuth();
 defineProps<{
   username?: string;
 }>();
+const scroll = { scrollTop: 0, clientHeight: 0, scrollHeight: 0 };
+const page = ref(0);
 const loading = ref(true);
 const usernameExist = ref(false);
 const modalStore = useModalStore();
@@ -21,12 +23,15 @@ const customerStore = useCustomerStore();
 const feedStore = useFeedStore();
 const route = useRoute();
 const postStore = usePostStore();
+
 const feed = computed(() => {
   return feedStore.feed;
 });
+
 const posts = computed(() => {
   return postStore.posts;
 });
+
 const username = computed(() => {
   return (route.params.username || customerStore.customer.profile?.username) as string;
 });
@@ -55,6 +60,32 @@ async function loadFeed() {
   await postStore.fetchPosts(username.value);
   loading.value = false;
 }
+async function detectBottom() {
+  if (postStore.pagination?.totalPages && page.value >= postStore.pagination?.totalPages - 1) {
+    return;
+  }
+
+  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+  scroll.scrollTop = scrollTop;
+
+  if (scrollTop + clientHeight >= scrollHeight - 100) {
+    window.removeEventListener("scroll", detectBottom);
+    page.value += 1;
+    await postStore.fetchPosts(username.value, page.value);
+    document.documentElement.scrollTop = scroll.scrollTop;
+    setTimeout(() => {
+      window.addEventListener("scroll", detectBottom);
+    }, 300);
+  }
+}
+
+onMounted(() => {
+  window.addEventListener("scroll", detectBottom);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", detectBottom);
+});
 </script>
 <template>
   <div v-if="usernameExist && !loading && feed">

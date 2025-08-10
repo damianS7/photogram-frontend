@@ -1,5 +1,8 @@
 // services/customerService.ts
 
+import type { Pagination } from "@/types/Pagination";
+import type { Post } from "@/types/Post";
+
 const API = import.meta.env.VITE_APP_API_URL;
 const authHeader = () => {
   const token = localStorage.getItem("token");
@@ -10,8 +13,8 @@ const authHeader = () => {
 };
 
 export const postService = {
-  async getPosts(username: string): Promise<Post[]> {
-    const response = await fetch(`${API}/posts/${username}`, {
+  async getPosts(username: string, page?: number): Promise<Pagination> {
+    const response = await fetch(`${API}/posts/${username}?page=${page}&sort=createdAt,DESC`, {
       method: "GET",
       headers: authHeader(),
     });

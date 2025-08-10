@@ -3,10 +3,12 @@ import { defineStore } from "pinia";
 import { postService } from "@/services/postService";
 import type { Post } from "@/types/Post";
 import { computed, ref, type Ref } from "vue";
+import type { Pagination } from "@/types/Pagination";
 
 export const usePostStore = defineStore("post", () => {
   const customerId = 0;
   const posts = ref<Post[]>([]);
+  const pagination = ref<Pagination>();
 
   // getters
   const getPosts = computed(() => posts.value);
@@ -16,18 +18,23 @@ export const usePostStore = defineStore("post", () => {
     });
   });
 
-  async function fetchPosts(username: string): Promise<Post[]> {
+  async function fetchPosts(username: string, page?: number): Promise<Post[]> {
     const token = localStorage.getItem("token");
     if (!token) return posts.value;
 
     try {
-      const fPosts = (await postService.getPosts(username)) as Post[];
-      for (const post of fPosts) {
+      const pPosts = (await postService.getPosts(username, page)) as Pagination;
+      for (const post of pPosts.content as Post[]) {
         const resource = await postService.getPhoto(post.photoFilename);
         post.photoFilename = URL.createObjectURL(resource);
       }
 
-      posts.value = fPosts;
+      if (posts.value.length > 0) {
+        pagination.value = pPosts;
+        posts.value.push(...pPosts.content);
+      } else {
+        posts.value = pPosts.content;
+      }
     } catch (error) {
       console.error(error);
     }
@@ -69,5 +76,14 @@ export const usePostStore = defineStore("post", () => {
     return imageFilename;
   }
 
-  return { getPosts, fetchPosts, posts, customerId, uploadPhoto, createPost, deletePost };
+  return {
+    pagination,
+    getPosts,
+    fetchPosts,
+    posts,
+    customerId,
+    uploadPhoto,
+    createPost,
+    deletePost,
+  };
 });
