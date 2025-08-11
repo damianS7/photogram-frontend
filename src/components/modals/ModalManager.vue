@@ -18,7 +18,6 @@ const modals = {
   FollowedList,
 };
 </script>
-
 <template>
   <component
     :is="modals[modalStore.component as keyof typeof modals]"
