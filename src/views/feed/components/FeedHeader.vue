@@ -48,14 +48,22 @@ async function showFollowing() {
         </span>
         <slot v-if="isCurrentUserOwner(feed.customerId)">
           <span>
-            <a @click="showFollowers" href="#"
-              >Followers:&nbsp;<b>{{ feed.followers }}</b>
-            </a>
+            <button
+              class="btn btn-sm bg-gray-200 hover:bg-gray-300"
+              @click="showFollowers"
+              href="#"
+            >
+              Followers:&nbsp;<b>{{ feed.followers }}</b>
+            </button>
           </span>
           <span>
-            <a @click="showFollowing" href="#"
-              >Following:&nbsp;<b>{{ feed.following }}</b>
-            </a>
+            <button
+              class="btn btn-sm bg-gray-200 hover:bg-gray-300"
+              @click="showFollowing"
+              href="#"
+            >
+              Following:&nbsp;<b>{{ feed.following }}</b>
+            </button>
           </span>
         </slot>
         <slot v-else>
