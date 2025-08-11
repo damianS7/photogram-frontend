@@ -6,13 +6,14 @@ import { useCustomerStore } from "@/stores/customer";
 import { usePostStore } from "@/stores/post";
 import { Heart } from "lucide-vue-next";
 import { useCommentStore } from "@/stores/comment";
+import CommentList from "./comment/CommentList.vue";
+import { useUtil } from "@/composables/useUtil";
+const { toDatetime } = useUtil();
 const props = defineProps<{
   post: Post;
 }>();
 
 const commentStore = useCommentStore();
-// const comments = commentStore.getComments(props.post.id) as Comment[];
-const comments = commentStore.comments;
 const modalStore = useModalStore();
 const postStore = usePostStore();
 function cancel() {
@@ -21,26 +22,8 @@ function cancel() {
 
 const emit = defineEmits(["submit", "cancel"]);
 
-const image = ref<File | null>(null);
 const imagePreview = ref<string | null>(props.post.photoFilename);
-const caption = ref("");
-const isSubmitting = ref(false);
-
-function handleSubmit() {
-  if (!image.value) return;
-
-  isSubmitting.value = true;
-  emit("submit", {
-    image: image.value,
-    caption: caption.value,
-  });
-
-  // reset
-  isSubmitting.value = false;
-  image.value = null;
-  imagePreview.value = null;
-  caption.value = "";
-}
+const comment = ref("");
 
 function isLoggedUserPost() {
   const loggedUserCustomerId = useCustomerStore().customer.id;
@@ -48,8 +31,8 @@ function isLoggedUserPost() {
   return loggedUserCustomerId === props.post.customerId ? true : false;
 }
 
-function postComment() {
-  //
+async function postComment() {
+  await commentStore.postComment(props.post.id, comment.value);
 }
 
 async function deletePost() {
@@ -82,7 +65,7 @@ onMounted(async () => {
         <div v-else class="text-white">No image selected</div>
       </div>
 
-      <!-- Comentarios y formulario -->
+      <!-- comments list and form -->
       <div class="w-1/2 flex flex-col">
         <!-- Encabezado -->
         <div class="border-b p-4 font-semibold text-sm flex justify-between items-center">
@@ -93,37 +76,36 @@ onMounted(async () => {
           <button @click="cancel" class="text-gray-400 hover:text-gray-700 text-xs">✕</button>
         </div>
 
-        <!-- Lista de comentarios -->
-        <div class="flex-1 overflow-y-auto p-4 space-y-2 text-sm">
-          <div class="flex flex-col border-b p-4 gap-1">
-            <span>
-              {{ post.description }}
-            </span>
-            <span class="flex text-xs italic justify-end">
-              {{ post.createdAt }}
-            </span>
-          </div>
-          <div v-for="(comment, index) in comments" :key="index" class="border-b pb-2">
-            <strong>{{ comment.username }}</strong> {{ comment.content }}
-          </div>
+        <!-- comment list  -->
+        <div v-if="post.description" class="border-b p-4 gap-1">
+          <span>
+            {{ post.description }}
+          </span>
+          <span class="flex text-xs italic justify-end">
+            {{ toDatetime(post.createdAt) }}
+          </span>
         </div>
 
-        <!-- Campo de comentario -->
-        <form @submit.prevent="handleSubmit" class="border-t p-4 flex items-center gap-2">
+        <div class="overflow-hidden h-full">
+          <CommentList :post-id="post.id" />
+        </div>
+
+        <!-- comment form -->
+        <div class="border-t p-4 flex items-center gap-2">
           <textarea
-            v-model="caption"
+            v-model="comment"
             rows="1"
             placeholder="Add a comment..."
             class="flex-1 border rounded px-3 py-2 text-sm resize-none focus:outline-none focus:ring focus:border-blue-300"
           ></textarea>
           <button
             type="submit"
+            @click="postComment"
             class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded"
-            :disabled="!image || isSubmitting"
           >
             Publish
           </button>
-        </form>
+        </div>
       </div>
     </div>
   </div>

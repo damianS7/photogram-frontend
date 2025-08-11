@@ -1,5 +1,6 @@
 // services/commentService.ts
 import type { Comment } from "@/types/Comment";
+import type { PaginatedResponse } from "@/types/PaginatedResponse";
 
 const API = import.meta.env.VITE_APP_API_URL;
 const authHeader = () => {
@@ -11,11 +12,14 @@ const authHeader = () => {
 };
 
 export const commentService = {
-  async getComments(postId: number): Promise<Comment[]> {
-    const response = await fetch(`${API}/comments/${postId}`, {
-      method: "GET",
-      headers: authHeader(),
-    });
+  async getComments(postId: number, page?: number): Promise<PaginatedResponse> {
+    const response = await fetch(
+      `${API}/posts/${postId}/comments?page=${page}&sort=createdAt,DESC`,
+      {
+        method: "GET",
+        headers: authHeader(),
+      }
+    );
 
     if (response.status !== 200) {
       const json = await response.json();
@@ -26,7 +30,7 @@ export const commentService = {
   },
 
   async postComment(postId: number, comment: string): Promise<Comment> {
-    const response = await fetch(`${API}/comments/${postId}`, {
+    const response = await fetch(`${API}/posts/${postId}/comments`, {
       method: "POST",
       headers: authHeader(),
       body: JSON.stringify({ postId, comment }),

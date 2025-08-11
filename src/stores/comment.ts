@@ -3,9 +3,11 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import type { Comment } from "@/types/Comment";
 import { commentService } from "@/services/commentService";
+import type { PaginatedResponse } from "@/types/PaginatedResponse";
 
 export const useCommentStore = defineStore("comment", () => {
   const comments = ref<Comment[]>([]); // record id comment
+  const pagination = ref<PaginatedResponse>();
 
   // getters
   const getComments = computed(() => (postId: number) => {
@@ -14,14 +16,19 @@ export const useCommentStore = defineStore("comment", () => {
     });
   });
 
-  async function fetchComments(postId: number): Promise<Comment[]> {
+  async function fetchComments(postId: number, page?: number): Promise<Comment[]> {
     const token = localStorage.getItem("token");
     if (!token) return comments.value;
 
     try {
-      const fPosts = (await commentService.getComments(postId)) as Comment[];
+      const paginatedPosts = (await commentService.getComments(postId, page)) as PaginatedResponse;
 
-      comments.value = fPosts;
+      if (page && typeof page === "number") {
+        comments.value.push(...paginatedPosts.content);
+        return comments.value;
+      }
+      comments.value = paginatedPosts.content;
+      pagination.value = paginatedPosts;
     } catch (error) {
       console.error(error);
     }
@@ -34,7 +41,7 @@ export const useCommentStore = defineStore("comment", () => {
 
     try {
       const aComment = (await commentService.postComment(postId, comment)) as Comment;
-      comments.value.push(aComment);
+      comments.value.unshift(aComment);
       return aComment;
     } catch (error) {
       console.error(error);
@@ -56,5 +63,5 @@ export const useCommentStore = defineStore("comment", () => {
     }
   }
 
-  return { comments, deleteComment, postComment, fetchComments, getComments };
+  return { comments, deleteComment, postComment, fetchComments, getComments, pagination };
 });
