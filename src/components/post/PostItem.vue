@@ -7,6 +7,7 @@ import { useCommentStore } from "@/stores/comment";
 import CommentList from "./comment/CommentList.vue";
 import { useUtil } from "@/composables/useUtil";
 import { useAuth } from "@/composables/useAuth";
+import LikePanel from "./like/LikePanel.vue";
 const { isCurrentUserOwner } = useAuth();
 const { toDatetime } = useUtil();
 const props = defineProps<{
@@ -106,12 +107,17 @@ onUnmounted(() => {
         </div>
 
         <!-- comment list  -->
-        <div v-if="post.description" class="border-b p-4 gap-1">
-          <span>
+        <div class="border-b p-2">
+          <span v-if="post.description" class="text-sm flex mb-2">
             {{ post.description }}
           </span>
-          <span class="flex text-xs italic justify-end">
-            {{ toDatetime(post.createdAt) }}
+          <span class="flex text-xs italic justify-between items-center px-4">
+            <span>
+              <LikePanel :post-id="post.id" />
+            </span>
+            <span>
+              {{ toDatetime(post.createdAt) }}
+            </span>
           </span>
         </div>
 
