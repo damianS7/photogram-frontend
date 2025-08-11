@@ -1,9 +1,9 @@
 export interface Feed {
-  username: string;
   customerId: number;
+  username: string;
   profileImageFilename: string;
   aboutMe: string;
   followers: number;
-  followed: number;
+  following: number;
   totalPosts: number;
 }
