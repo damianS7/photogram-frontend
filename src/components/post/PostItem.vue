@@ -54,12 +54,6 @@ function closeModal() {
   modalStore.resolve(false);
 }
 
-const handleEsc = (e: KeyboardEvent) => {
-  if (e.key === "Escape") {
-    closeModal();
-  }
-};
-
 // lifececycle hooks
 onMounted(async () => {
   commentTextareaRef.value?.focus();
