@@ -6,6 +6,7 @@ import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import type { Customer } from "@/types/Customer";
 import type { GenderType } from "@/types/Profile";
+import type { CustomerRegistration } from "@/types/CustomerRegistration";
 const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
@@ -48,6 +49,13 @@ const formFields = ref([
     name: "password",
     type: "password",
     placeholder: "Password",
+    value: "",
+    error: "",
+  },
+  {
+    name: "username",
+    type: "text",
+    placeholder: "Your @username",
     value: "",
     error: "",
   },
@@ -110,18 +118,15 @@ const onFormSubmit = async () => {
     return;
   }
 
-  const customer: Customer = {
-    id: -1,
+  const customer: CustomerRegistration = {
     email: formData.email,
     password: formData.password,
-    profile: {
-      firstName: formData.firstname,
-      lastName: formData.lastname,
-      phone: formData.phone,
-      birthdate: formData.birthdate,
-      gender: formData.gender as GenderType,
-      avatarFilename: "",
-    },
+    username: formData.username,
+    firstName: formData.firstname,
+    lastName: formData.lastname,
+    phone: formData.phone,
+    birthdate: formData.birthdate,
+    gender: formData.gender as GenderType,
   };
 
   await authStore

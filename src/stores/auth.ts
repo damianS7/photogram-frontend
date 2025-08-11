@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { authService } from "@/services/authService";
 import { jwtDecode } from "jwt-decode";
 import type { JwtPayload } from "@/types/JwtPayload";
-import type { Customer } from "@/types/Customer";
+import type { CustomerRegistration } from "@/types/CustomerRegistration";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -25,12 +25,12 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
-    async register(fields: Customer) {
+    async register(fields: CustomerRegistration) {
       return await authService.register(fields);
     },
 
-    async isTokenValid(token: string) {
-      await authService.validateToken(token);
+    async isTokenValid(token: string): Promise<boolean> {
+      return await authService.validateToken(token);
     },
 
     async logout() {

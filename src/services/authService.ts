@@ -1,5 +1,4 @@
-import type { Customer } from "@/types/Customer";
-
+import type { CustomerRegistration } from "@/types/CustomerRegistration";
 const API = import.meta.env.VITE_APP_API_URL;
 
 export const authService = {
@@ -19,7 +18,7 @@ export const authService = {
     return data.token;
   },
 
-  async register(fields: Customer) {
+  async register(fields: CustomerRegistration) {
     const response = await fetch(`${API}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -34,7 +33,7 @@ export const authService = {
     return await response.json();
   },
 
-  async validateToken(token: string) {
+  async validateToken(token: string): Promise<boolean> {
     const response = await fetch(`${API}/auth/token/validate`, {
       method: "GET",
       headers: {
@@ -45,7 +44,8 @@ export const authService = {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || "Token invalid.");
+      throw new Error(error.message || "Invalid token.");
     }
+    return true;
   },
 };
