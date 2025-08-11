@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useUtil } from "@/composables/useUtil";
 import { useCommentStore } from "@/stores/comment";
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 const { toDatetime } = useUtil();
 const props = defineProps<{
   postId: number;
@@ -39,7 +39,7 @@ onMounted(async () => {
   }
 });
 
-onBeforeUnmount(() => {
+onUnmounted(() => {
   document.body.style.overflow = "";
   if (commentListRef.value) {
     commentListRef.value.removeEventListener("scroll", detectBottom);
