@@ -1,38 +1,38 @@
 <script setup lang="ts">
 import { useModalStore } from "@/stores/modal";
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import type { Post } from "@/types/Post";
-import { useCustomerStore } from "@/stores/customer";
 import { usePostStore } from "@/stores/post";
-import { Heart } from "lucide-vue-next";
 import { useCommentStore } from "@/stores/comment";
 import CommentList from "./comment/CommentList.vue";
 import { useUtil } from "@/composables/useUtil";
+import { useAuth } from "@/composables/useAuth";
+const { isCurrentUserOwner } = useAuth();
 const { toDatetime } = useUtil();
 const props = defineProps<{
   post: Post;
 }>();
 
+// stores
 const commentStore = useCommentStore();
 const modalStore = useModalStore();
 const postStore = usePostStore();
-function cancel() {
-  modalStore.resolve(false);
-}
 
-const emit = defineEmits(["submit", "cancel"]);
-
+// refs
 const imagePreview = ref<string | null>(props.post.photoFilename);
 const comment = ref("");
+const commentTextareaRef = ref<HTMLDivElement | null>(null);
 
-function isLoggedUserPost() {
-  const loggedUserCustomerId = useCustomerStore().customer.id;
-
-  return loggedUserCustomerId === props.post.customerId ? true : false;
-}
-
+// methods
 async function postComment() {
+  // no empty comment allowed
+  if (comment.value.trim() === "") {
+    comment.value = "";
+    return;
+  }
+
   await commentStore.postComment(props.post.id, comment.value);
+  comment.value = "";
 }
 
 async function deletePost() {
@@ -47,14 +47,39 @@ async function deletePost() {
 
   postStore.deletePost(props.post.id);
 }
+
+// actions
+function closeModal() {
+  modalStore.resolve(false);
+}
+
+const handleEsc = (e: KeyboardEvent) => {
+  if (e.key === "Escape") {
+    closeModal();
+  }
+};
+
+// lifececycle hooks
 onMounted(async () => {
+  commentTextareaRef.value?.focus();
   await commentStore.fetchComments(props.post.id);
+  window.addEventListener("keydown", handleEsc);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("keydown", handleEsc);
 });
 </script>
 <template>
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
-    <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl h-[90vh] overflow-hidden flex">
-      <!-- Imagen -->
+  <div
+    @click="closeModal"
+    class="fixed inset-0 z-50 flex bg-black items-center justify-center bg-opacity-60 p-4"
+  >
+    <div
+      @click.stop
+      class="bg-white rounded-lg shadow-lg w-full max-w-4xl h-[90vh] overflow-hidden flex"
+    >
+      <!-- post image preview -->
       <div class="w-1/2 bg-black flex items-center justify-center">
         <img
           v-if="imagePreview"
@@ -67,13 +92,17 @@ onMounted(async () => {
 
       <!-- comments list and form -->
       <div class="w-1/2 flex flex-col">
-        <!-- Encabezado -->
+        <!-- post header -->
         <div class="border-b p-4 font-semibold text-sm flex justify-between items-center">
-          <button v-if="isLoggedUserPost()" @click="deletePost" class="btn btn-xs btn-danger">
+          <button
+            v-if="isCurrentUserOwner(post.customerId)"
+            @click="deletePost"
+            class="btn btn-xs btn-danger"
+          >
             DELETE POST
           </button>
           <span v-else>&nbsp;</span>
-          <button @click="cancel" class="text-gray-400 hover:text-gray-700 text-xs">✕</button>
+          <button @click="closeModal" class="text-gray-400 hover:text-gray-700 text-xs">✕</button>
         </div>
 
         <!-- comment list  -->
@@ -93,7 +122,9 @@ onMounted(async () => {
         <!-- comment form -->
         <div class="border-t p-4 flex items-center gap-2">
           <textarea
+            ref="commentTextareaRef"
             v-model="comment"
+            @keyup.enter="postComment"
             rows="1"
             placeholder="Add a comment..."
             class="flex-1 border rounded px-3 py-2 text-sm resize-none focus:outline-none focus:ring focus:border-blue-300"
