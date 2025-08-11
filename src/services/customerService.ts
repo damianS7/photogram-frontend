@@ -107,9 +107,7 @@ export const customerService = {
   async usernameExists(username: string): Promise<boolean> {
     const response = await fetch(`${API}/customers/profile/check-username/${username}`, {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      headers: authHeader(),
     });
 
     if (response.status === 200) {
