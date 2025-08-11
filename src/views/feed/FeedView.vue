@@ -3,7 +3,7 @@ import { useCustomerStore } from "@/stores/customer";
 import FeedHeader from "./components/FeedHeader.vue";
 import PostList from "@/components/post/PostList.vue";
 import { useRoute } from "vue-router";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { usePostStore } from "@/stores/post";
 import { useModalStore } from "@/stores/modal";
 import { useFeedStore } from "@/stores/feed";
@@ -14,7 +14,6 @@ const { isCurrentUserOwner } = useAuth();
 defineProps<{
   username?: string;
 }>();
-const scroll = { scrollTop: 0, clientHeight: 0, scrollHeight: 0 };
 const page = ref(0);
 const loading = ref(true);
 const usernameExist = ref(false);
@@ -60,19 +59,17 @@ async function loadFeed() {
   await postStore.fetchPosts(username.value);
   loading.value = false;
 }
-async function detectBottom() {
-  if (postStore.pagination?.totalPages && page.value >= postStore.pagination?.totalPages - 1) {
-    return;
-  }
 
-  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-  scroll.scrollTop = scrollTop;
+async function detectBottom() {
+  const { scrollTop, scrollHeight, clientHeight } = document.documentElement as HTMLDivElement;
 
   if (scrollTop + clientHeight >= scrollHeight - 100) {
+    if (postStore.pagination?.totalPages && page.value >= postStore.pagination?.totalPages - 1) {
+      return;
+    }
     window.removeEventListener("scroll", detectBottom);
     page.value += 1;
     await postStore.fetchPosts(username.value, page.value);
-    document.documentElement.scrollTop = scroll.scrollTop;
     setTimeout(() => {
       window.addEventListener("scroll", detectBottom);
     }, 300);
@@ -83,7 +80,7 @@ onMounted(() => {
   window.addEventListener("scroll", detectBottom);
 });
 
-onBeforeUnmount(() => {
+onUnmounted(() => {
   window.removeEventListener("scroll", detectBottom);
 });
 </script>
