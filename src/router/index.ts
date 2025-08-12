@@ -116,8 +116,12 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore();
+  if (!authStore.initialized) {
+    await authStore.initialize();
+  }
+
   const role = authStore.getPayload()?.role || "USER";
   const isAuthenticated = authStore.isAuthenticated;
 

@@ -6,7 +6,7 @@ import ModalManager from "@/components/modals/ModalManager.vue";
 const authStore = useAuthStore();
 
 onMounted(async () => {
-  await authStore.initialize();
+  // await authStore.initialize();
 });
 </script>
 <template>
