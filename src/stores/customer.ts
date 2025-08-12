@@ -18,7 +18,6 @@ export const useCustomerStore = defineStore("customer", {
 
   actions: {
     async initialize() {
-      if (this.initialized) return;
       const token = localStorage.getItem("token");
       if (!token) return;
 
@@ -26,7 +25,7 @@ export const useCustomerStore = defineStore("customer", {
         const customer = await customerService.getCustomer();
         this.setCustomer(customer);
 
-        if (customer?.profile?.avatarFilename) {
+        if (customer.profile.avatarFilename) {
           const photo = await customerService.getPhoto(customer.profile.avatarFilename);
           localStorage.setItem("profilePhotoURL", URL.createObjectURL(photo));
         }

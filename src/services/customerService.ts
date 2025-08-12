@@ -20,7 +20,7 @@ export const customerService = {
 
     if (response.status !== 200) {
       const json = await response.json();
-      throw new Error("Failed to fetch customer. " + json.message);
+      throw new Error(json.message || "Failed to fetch customer.");
     }
 
     return await response.json();
