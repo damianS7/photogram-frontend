@@ -21,7 +21,10 @@ export const useAuthStore = defineStore("auth", {
         this.token = token;
         localStorage.setItem("token", token);
       } catch (error) {
-        throw error instanceof Error ? error : new Error("Login failed.");
+        if (error instanceof Error) {
+          throw error;
+        }
+        throw new Error("Login failed.");
       }
     },
 
@@ -41,17 +44,17 @@ export const useAuthStore = defineStore("auth", {
 
     async initialize() {
       const savedToken = localStorage.getItem("token");
-      if (savedToken) {
-        this.token = savedToken;
-
-        try {
-          await this.isTokenValid(savedToken);
-        } catch {
-          this.logout();
-        }
+      if (!savedToken) {
+        return;
       }
 
-      this.initialized = true;
+      try {
+        await this.isTokenValid(savedToken);
+        this.token = savedToken;
+        this.initialized = true;
+      } catch {
+        this.logout();
+      }
     },
 
     getPayload() {

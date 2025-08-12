@@ -3,7 +3,7 @@ import { onMounted, onUnmounted, ref } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useCustomerStore } from "@/stores/customer";
 import { useSettingStore } from "@/stores/setting";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import Header from "@/components/Header.vue";
 import { useSpinnerStore } from "@/stores/spinner";
 const screenSpinner = useSpinnerStore();
@@ -17,12 +17,14 @@ let initialized = ref(false);
 
 async function checkIfTokenIsValid() {
   const token = authStore.token;
-  await authStore.isTokenValid(token).catch(async () => {
+  try {
+    await authStore.isTokenValid(token);
+  } catch {
     initialized.value = false;
     await authStore.logout();
     await wait(100);
     router.push("/auth/login");
-  });
+  }
 }
 
 function sleep(ms: number): Promise<void> {

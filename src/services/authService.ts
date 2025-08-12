@@ -11,7 +11,7 @@ export const authService = {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || "Invalid credentials.");
+      throw new Error(error.message || "Login failed.");
     }
 
     const data = await response.json();
@@ -44,7 +44,7 @@ export const authService = {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || "Invalid token.");
+      throw new Error(error.message || "Token validation failed.");
     }
     return true;
   },
