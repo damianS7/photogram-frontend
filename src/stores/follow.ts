@@ -8,105 +8,80 @@ export const useFollowStore = defineStore("follow", () => {
   const followers = ref<Follow[]>([]);
   const following = ref<Follow[]>([]);
 
-  async function fetchFollows(customerId: number) {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw Error("Token not found.");
-    }
-
+  // fetch followers for the given customer by id
+  async function fetchCustomerFollowers(customerId: number) {
     try {
       followers.value = (await followService.getFollowers(customerId)) as Follow[];
-      for (const follower of followers.value) {
-        const resource = await customerService.getPhoto(
-          follower.followerCustomerProfileImageFilename
-        );
-        follower.followerCustomerProfileImageFilename = URL.createObjectURL(resource);
-      }
-      following.value = (await followService.getFollowing(customerId)) as Follow[];
-      for (const followed of following.value) {
-        const resource = await customerService.getPhoto(
-          followed.followedCustomerProfileImageFilename
-        );
-        followed.followedCustomerProfileImageFilename = URL.createObjectURL(resource);
-      }
     } catch (error) {
-      console.error(error);
+      console.error("Failed to fetch followers.");
+      throw error;
     }
 
-    throw Error("Failed to fetch follows.");
+    // for every follower ...
+    for (const follower of followers.value) {
+      const imageFilename = follower.followerCustomerProfileImageFilename;
+      try {
+        // fetch the photo
+        const resource = await customerService.getPhoto(imageFilename);
+        follower.followerCustomerProfileImageFilename = URL.createObjectURL(resource);
+      } catch (error) {
+        throw error;
+      }
+    }
   }
 
-  async function fetchFollowers(customerId: number) {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw Error("Token not found.");
-    }
-
-    try {
-      followers.value = (await followService.getFollowers(customerId)) as Follow[];
-      for (const follower of followers.value) {
-        const resource = await customerService.getPhoto(
-          follower.followerCustomerProfileImageFilename
-        );
-        follower.followerCustomerProfileImageFilename = URL.createObjectURL(resource);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-
-    throw Error("Failed to fetch followers.");
-  }
-
-  async function fetchFollowings(customerId: number) {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw Error("Token not found.");
-    }
-
+  // fetch followings for the given customer by id
+  async function fetchFollowingCustomers(customerId: number) {
     try {
       following.value = (await followService.getFollowing(customerId)) as Follow[];
-      for (const followed of following.value) {
-        const resource = await customerService.getPhoto(
-          followed.followedCustomerProfileImageFilename
-        );
-        followed.followedCustomerProfileImageFilename = URL.createObjectURL(resource);
-      }
     } catch (error) {
-      console.error(error);
+      throw error;
+    }
+
+    // for every following customer ...
+    for (const followed of following.value) {
+      const imageFilename = followed.followedCustomerProfileImageFilename;
+      try {
+        // fetch the photo
+        const resource = await customerService.getPhoto(imageFilename);
+        followed.followedCustomerProfileImageFilename = URL.createObjectURL(resource);
+      } catch (error) {
+        throw error;
+      }
     }
   }
 
+  // follow the given customer by id
   async function follow(customerId: number): Promise<Follow> {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw Error("Token not found.");
-    }
-
-    return await followService.follow(customerId).then((follow) => {
+    try {
+      const follow = await followService.follow(customerId);
       followers.value.push(follow);
       return follow;
-    });
-  }
-
-  async function unfollow(customerId: number) {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw Error("Token not found.");
-    }
-
-    try {
-      await followService.unfollow(customerId).then(() => {
-        const index = following.value.findIndex(
-          (follow) => follow.followedCustomerId === customerId
-        );
-        if (index !== -1) {
-          following.value.splice(index, 1);
-        }
-      });
     } catch (error) {
-      console.error(error);
+      throw error;
     }
   }
 
-  return { follow, unfollow, fetchFollows, fetchFollowers, fetchFollowings, followers, following };
+  // unfollow the given customer by id
+  async function unfollow(customerId: number) {
+    try {
+      await followService.unfollow(customerId);
+
+      const index = following.value.findIndex((follow) => follow.followedCustomerId === customerId);
+      if (index !== -1) {
+        following.value.splice(index, 1);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  return {
+    follow,
+    unfollow,
+    fetchCustomerFollowers,
+    fetchFollowingCustomers,
+    followers,
+    following,
+  };
 });

@@ -10,21 +10,7 @@ const authHeader = () => {
 };
 
 export const followService = {
-  async isFollowing(customerId: number): Promise<boolean> {
-    const response = await fetch(`${API}/customers/${customerId}/checkFollowing`, {
-      method: "GET",
-      headers: authHeader(),
-    });
-
-    if (response.status !== 200) {
-      // const json = await response.json();
-      // throw new Error("Failed to fetch follows. " + json.message);
-      return false;
-    }
-
-    return true;
-  },
-
+  // get followers for the given customer by id
   async getFollowers(customerId: number): Promise<Follow[]> {
     const response = await fetch(`${API}/customers/${customerId}/followers`, {
       method: "GET",
@@ -33,12 +19,13 @@ export const followService = {
 
     if (response.status !== 200) {
       const json = await response.json();
-      throw new Error("Failed to fetch follows. " + json.message);
+      throw new Error("Failed to fetch followers. " + json.message);
     }
 
     return await response.json();
   },
 
+  // get following for the given customer by id
   async getFollowing(customerId: number): Promise<Follow[]> {
     const response = await fetch(`${API}/customers/${customerId}/following`, {
       method: "GET",
@@ -47,12 +34,28 @@ export const followService = {
 
     if (response.status !== 200) {
       const json = await response.json();
-      throw new Error("Failed to fetch follows. " + json.message);
+      throw new Error("Failed to fetch followings. " + json.message);
     }
 
     return await response.json();
   },
 
+  // get the follow relation between logged customer and the customer passed id
+  async getFollow(customerId: number): Promise<Follow | undefined> {
+    const response = await fetch(`${API}/customers/${customerId}/follow`, {
+      method: "GET",
+      headers: authHeader(),
+    });
+
+    if (response.status !== 200) {
+      const json = await response.json();
+      throw new Error("Failed to fetch follow relation. " + json.message);
+    }
+
+    return await response.json();
+  },
+
+  // follow customer by id
   async follow(customerId: number): Promise<Follow> {
     const response = await fetch(`${API}/customers/${customerId}/follow`, {
       method: "POST",
@@ -67,6 +70,7 @@ export const followService = {
     return (await response.json()) as Follow;
   },
 
+  // unfollow customer by id
   async unfollow(customerId: number) {
     const response = await fetch(`${API}/customers/${customerId}/unfollow`, {
       method: "DELETE",
