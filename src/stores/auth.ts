@@ -40,10 +40,7 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async initialize() {
-      const savedToken = localStorage.getItem("token");
-      if (!savedToken) {
-        return;
-      }
+      const savedToken = localStorage.getItem("token") || "";
 
       try {
         await this.isTokenValid(savedToken);
