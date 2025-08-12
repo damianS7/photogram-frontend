@@ -3,46 +3,54 @@ import { followService } from "@/services/followService";
 import { useFeedStore } from "@/stores/feed";
 import { useFollowStore } from "@/stores/follow";
 import { onMounted, ref } from "vue";
+
+// props
 const props = defineProps<{
   customerId: number;
   isFollowing?: boolean;
 }>();
+
+// data
 const isFollowing = ref(false);
+
+// store
 const followStore = useFollowStore();
 const feedStore = useFeedStore();
 
-async function follow() {
-  let followerCount = feedStore.feed?.followers as number;
-  if (typeof followerCount !== "number") {
-    return;
-  }
-
-  await followStore.follow(props.customerId).then(() => {
-    feedStore.updateFeed({ followers: followerCount + 1 });
+// functions
+function follow() {
+  followStore.follow(props.customerId).then(() => {
     isFollowing.value = true;
+    feedStore.updateFeed({ followers: 1 });
   });
 }
 
-async function unfollow() {
-  let followerCount = feedStore.feed?.followers as number;
-  if (typeof followerCount !== "number") {
-    return;
-  }
-
-  await followStore.unfollow(props.customerId).then(() => {
-    feedStore.updateFeed({ followers: followerCount - 1 });
+function unfollow() {
+  followStore.unfollow(props.customerId).then(() => {
     isFollowing.value = false;
+    feedStore.updateFeed({ followers: -1 });
   });
 }
 
-onMounted(async () => {
+function checkFollowing() {
   if (props.isFollowing) {
     isFollowing.value = props.isFollowing;
+    return;
   }
 
-  if (!props.isFollowing) {
-    isFollowing.value = await followService.isFollowing(props.customerId);
-  }
+  followService
+    .getFollow(props.customerId)
+    .then(() => {
+      isFollowing.value = true;
+    })
+    .catch(() => {
+      isFollowing.value = false;
+    });
+}
+
+// lifecycle hooks
+onMounted(() => {
+  checkFollowing();
 });
 </script>
 <template>

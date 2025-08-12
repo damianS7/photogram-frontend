@@ -1,23 +1,27 @@
 <script setup lang="ts">
+import { computed, onMounted } from "vue";
 import { useFollowStore } from "@/stores/follow";
 import { useModalStore } from "@/stores/modal";
-import { computed, onMounted, onUnmounted } from "vue";
+
+// props
 const props = defineProps<{
   customerId: number;
 }>();
+
+// store
 const followStore = useFollowStore();
 const followers = computed(() => followStore.followers);
 const modalStore = useModalStore();
 
+// functions
 function closeModal() {
   modalStore.resolve(false);
 }
 
+// lifecycle hooks
 onMounted(async () => {
-  await followStore.fetchFollowers(props.customerId);
+  await followStore.fetchCustomerFollowers(props.customerId);
 });
-
-onUnmounted(() => {});
 </script>
 <template>
   <div class="bg-white rounded-lg shadow-lg w-full max-w-md h-[90vh] overflow-hidden flex flex-col">
@@ -35,14 +39,14 @@ onUnmounted(() => {});
 
     <div class="overflow-scroll p-4 h-full">
       <div v-if="followers && followers.length > 0" class="space-y-4">
-        <span v-for="follow in followers" :key="follow.id" class="flex items-center gap-4">
+        <span v-for="follower in followers" :key="follower.id" class="flex items-center gap-4">
           <img
             alt="Profile Image"
-            :src="follow.followerCustomerProfileImageFilename"
+            :src="follower.followerCustomerProfileImageFilename"
             class="w-12 h-12 rounded-full object-cover"
           />
-          <router-link @click="closeModal" :to="`/@${follow.followerCustomerUsername}`">
-            {{ follow.followerCustomerUsername }}
+          <router-link @click="closeModal" :to="`/@${follower.followerCustomerUsername}`">
+            {{ follower.followerCustomerUsername }}
           </router-link>
         </span>
       </div>

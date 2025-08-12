@@ -1,25 +1,29 @@
 <script setup lang="ts">
+import { computed, onMounted } from "vue";
 import { useFollowStore } from "@/stores/follow";
 import { useModalStore } from "@/stores/modal";
-import { computed, onMounted, onUnmounted } from "vue";
 import FollowButton from "./FollowButton.vue";
 import type { Follow } from "@/types/Follow";
+
+// props
 const props = defineProps<{
   customerId: number;
 }>();
+
+// store
 const followStore = useFollowStore();
 const followed = computed(() => followStore.following as Follow[]);
 const modalStore = useModalStore();
 
+// functions
 function closeModal() {
   modalStore.resolve(false);
 }
 
+// lifecycle hooks
 onMounted(async () => {
-  await followStore.fetchFollowings(props.customerId);
+  await followStore.fetchFollowingCustomers(props.customerId);
 });
-
-onUnmounted(() => {});
 </script>
 <template>
   <div class="bg-white rounded-lg shadow-lg w-full max-w-md h-[90vh] overflow-hidden flex flex-col">
