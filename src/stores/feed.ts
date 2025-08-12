@@ -15,18 +15,50 @@ export const useFeedStore = defineStore("feed", () => {
     }
 
     try {
-      const fFeed = (await feedService.getFeed(username)) as Feed;
-      const resource = await customerService.getPhoto(fFeed.profileImageFilename);
-      fFeed.profileImageFilename = URL.createObjectURL(resource);
-
-      feed.value = fFeed;
-      return feed.value;
+      feed.value = await feedService.getFeed(username);
+      const resource = await customerService.getPhoto(feed.value.profileImageFilename);
+      feed.value.profileImageFilename = URL.createObjectURL(resource);
     } catch (error) {
       console.error(error);
+      throw error;
     }
 
-    throw Error("Failed to fetch feed.");
+    return feed.value;
   }
 
-  return { feed, fetchFeed };
+  async function refreshFeed(): Promise<Feed | undefined> {
+    if (!feed.value) {
+      return;
+    }
+
+    return await fetchFeed(feed.value.username);
+  }
+
+  async function updateFeed(fields: {
+    totalPosts?: number;
+    followers?: number;
+    following?: number;
+  }) {
+    if (!feed.value) {
+      return;
+    }
+    // const followerCount = feedStore.feed?.followers as number;
+    // if (typeof followerCount !== "number") {
+    //   return;
+    // }
+
+    if (typeof fields.followers === "number") {
+      feed.value.followers += fields.followers;
+    }
+
+    if (typeof fields.totalPosts === "number") {
+      feed.value.totalPosts += fields.totalPosts;
+    }
+
+    if (typeof fields.following === "number") {
+      feed.value.following += fields.following;
+    }
+  }
+
+  return { feed, fetchFeed, updateFeed };
 });
