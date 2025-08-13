@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useModalStore } from "@/stores/modal";
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import type { Post } from "@/types/Post";
 import { usePostStore } from "@/stores/post";
 import { useCommentStore } from "@/stores/comment";
@@ -8,8 +8,11 @@ import CommentList from "./comment/CommentList.vue";
 import { useUtil } from "@/composables/useUtil";
 import { useAuth } from "@/composables/useAuth";
 import LikePanel from "./like/LikePanel.vue";
+import { useFeedStore } from "@/stores/feed";
 const { isCurrentUserOwner } = useAuth();
 const { toDatetime } = useUtil();
+
+// props
 const props = defineProps<{
   post: Post;
 }>();
@@ -17,9 +20,10 @@ const props = defineProps<{
 // stores
 const commentStore = useCommentStore();
 const modalStore = useModalStore();
+const feedStore = useFeedStore();
 const postStore = usePostStore();
 
-// refs
+// data
 const imagePreview = ref<string | null>(props.post.photoFilename);
 const comment = ref("");
 const commentTextareaRef = ref<HTMLDivElement | null>(null);
@@ -32,8 +36,12 @@ async function postComment() {
     return;
   }
 
-  await commentStore.postComment(props.post.id, comment.value);
-  comment.value = "";
+  try {
+    await commentStore.postComment(props.post.id, comment.value);
+    comment.value = "";
+  } catch (error) {
+    // TODO show error message in a div??
+  }
 }
 
 async function deletePost() {
@@ -42,11 +50,14 @@ async function deletePost() {
     message: "Are you sure you want to delete this post?",
   });
 
-  if (!confirm) {
-    return;
+  if (confirm) {
+    try {
+      await postStore.deletePost(props.post.id);
+      feedStore.updateFeed({ totalPosts: -1 });
+    } catch (error) {
+      // TODO show error message
+    }
   }
-
-  postStore.deletePost(props.post.id);
 }
 
 // actions
@@ -59,8 +70,6 @@ onMounted(async () => {
   commentTextareaRef.value?.focus();
   await commentStore.fetchComments(props.post.id);
 });
-
-onUnmounted(() => {});
 </script>
 <template>
   <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl h-[90vh] overflow-hidden flex">
