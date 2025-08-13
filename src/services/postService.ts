@@ -2,8 +2,8 @@ import type { PaginatedResponse } from "@/types/PaginatedResponse";
 import type { Post } from "@/types/Post";
 
 const API = import.meta.env.VITE_APP_API_URL;
-const token = localStorage.getItem("token");
 const authHeader = () => {
+  const token = localStorage.getItem("token");
   return {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -28,7 +28,7 @@ export const postService = {
     const response = await fetch(`${API}/posts/photo/${filename}`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
 
@@ -71,7 +71,7 @@ export const postService = {
     const response = await fetch(`${API}/posts/photo`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
       body: formData,
     });
