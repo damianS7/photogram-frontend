@@ -117,6 +117,12 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, _from, next) => {
+  if (!to.meta.requiresAuth) {
+    next();
+    return;
+  }
+
+  // auth required from here
   const authStore = useAuthStore();
   if (!authStore.initialized) {
     await authStore.initialize();
@@ -133,6 +139,7 @@ router.beforeEach(async (to, _from, next) => {
     });
   }
 
+  // authenticated from here
   const role = authStore.getPayload()?.role || "USER";
   // Check if the route requires admin role
   if (to.meta.role && to.meta.role !== role) {
