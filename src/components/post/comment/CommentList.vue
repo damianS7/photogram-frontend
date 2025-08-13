@@ -64,21 +64,39 @@ onUnmounted(() => {
     v-if="comments.length > 0"
     class="flex flex-col overflow-y-auto p-4 h-full gap-2"
   >
-    <div
-      v-for="(comment, index) in comments"
-      :key="index"
-      class="flex flex-col border-2 border-dashed py-1 px-2 rounded bg-gray-100"
-    >
-      <span class="py-2 text-sm">
-        {{ comment.content }}
-      </span>
-      <span class="flex justify-between items-center text-xs text-gray-500">
-        <strong>{{ comment.username }}</strong>
-        <span class="italic">
-          {{ toDatetime(comment.createdAt) }}
+    <TransitionGroup name="fade" tag="div" class="space-y-2">
+      <div
+        v-for="(comment, index) in comments"
+        :key="index"
+        class="flex flex-col border-2 border-dashed py-1 px-2 rounded bg-gray-100"
+      >
+        <span class="py-2 text-sm">
+          {{ comment.content }}
         </span>
-      </span>
-    </div>
+        <span class="flex justify-between items-center text-xs text-gray-500">
+          <strong>{{ comment.username }}</strong>
+          <span class="italic">
+            {{ toDatetime(comment.createdAt) }}
+          </span>
+        </span>
+      </div>
+    </TransitionGroup>
   </div>
   <div v-else class="p-4 text-center text-sm">No comments found.</div>
 </template>
+<style scoped>
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.fade-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-enter-active {
+  transition: all 0.3s ease;
+}
+.fade-move {
+  transition: transform 0.3s ease;
+}
+</style>
