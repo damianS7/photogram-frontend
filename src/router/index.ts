@@ -11,6 +11,9 @@ import ProfileView from "@/views/settings/profile/ProfileView.vue";
 import AccountView from "@/views/settings/account/AccountView.vue";
 import FeedView from "@/views/feed/FeedView.vue";
 import { useAuthStore } from "@/stores/auth";
+import NotificationsView from "@/views/settings/notifications/NotificationsView.vue";
+import PrivacyView from "@/views/settings/privacy/PrivacyView.vue";
+import SecurityView from "@/views/settings/security/SecurityView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -41,11 +44,17 @@ const routes: Array<RouteRecordRaw> = [
     name: "settings",
     component: SettingsLayout,
     redirect: "/settings/profile",
+    meta: { requiresAuth: true },
     children: [
       {
         path: "profile",
         name: "settings-profile",
         component: ProfileView,
+      },
+      {
+        path: "notifications",
+        name: "settings-notifications",
+        component: NotificationsView,
       },
       {
         path: "account",
@@ -55,17 +64,12 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "privacy",
         name: "settings-privacy",
-        component: AccountView,
-      },
-      {
-        path: "notifications",
-        name: "settings-notifications",
-        component: AccountView,
+        component: PrivacyView,
       },
       {
         path: "security",
         name: "settings-security",
-        component: AccountView,
+        component: SecurityView,
       },
     ],
   },
