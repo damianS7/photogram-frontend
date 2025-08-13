@@ -66,8 +66,8 @@ onUnmounted(() => {
   >
     <TransitionGroup name="fade" tag="div" class="space-y-2">
       <div
-        v-for="(comment, index) in comments"
-        :key="index"
+        v-for="comment in comments"
+        :key="comment.id"
         class="flex flex-col border-2 border-dashed py-1 px-2 rounded bg-gray-100"
       >
         <span class="py-2 text-sm">
