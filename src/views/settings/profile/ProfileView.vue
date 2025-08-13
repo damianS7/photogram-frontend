@@ -1,26 +1,28 @@
 <script setup lang="ts">
 import { useCustomerStore } from "@/stores/customer";
-import { Save } from "lucide-vue-next";
 import Alert from "@/components/Alert.vue";
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 import ProfileEditableField from "./components/ProfileEditableField.vue";
 import ProfilePhoto from "./components/ProfilePhotoUploader.vue";
 import type { GenderType } from "@/types/Profile";
 import { AlertType } from "@/types/AlertType";
 import { useModalStore } from "@/stores/modal";
+
+// store
 const modalStore = useModalStore();
 const customerStore = useCustomerStore();
+
+// data
 const customer = customerStore.getLoggedCustomer;
 const genderTypes: GenderType[] = ["MALE", "FEMALE"];
 const genderOptions = genderTypes.map((value) => ({
   value,
   label: value.charAt(0) + value.slice(1).toLowerCase(),
 }));
-// TODO add zod validation
 // message to show
 const alert = ref();
 const customerProfile = computed(() => customerStore.customer.profile);
-console.log("Customer Profile:", customerProfile.value?.firstName);
+
 // updatable fields to be displayed
 const formFields = ref([
   {
@@ -90,6 +92,7 @@ const formFields = ref([
   },
 ]);
 
+// functions
 // update a single field
 async function updateField(index: number, field: { name: string; value: string }) {
   // updating email requires a different method
@@ -120,14 +123,11 @@ async function updateField(index: number, field: { name: string; value: string }
   }
 
   // request for update
-  await customerStore
+  customerStore
     .updateProfile(currentPassword, {
       [field.name]: field.value,
     })
     .then((profile: any) => {
-      // FIXME profile not returning nothing ... see store
-      console.log("Profile updated:", profile);
-      // customerStore.setProfile(profile);
       formFields.value[index].value = field.value;
       alert.value.showMessage("Field successfully updated.", AlertType.SUCCESS);
     })
@@ -149,7 +149,7 @@ async function updatePassword(newPassword: string) {
   }
 
   // request for update
-  await customerStore
+  customerStore
     .changePassword(currentPassword, newPassword)
     .then(() => {
       alert.value.showMessage("Password successfully updated.", AlertType.SUCCESS);
@@ -171,7 +171,7 @@ async function updatePhoto(photo: any) {
     return;
   }
 
-  await customerStore
+  customerStore
     .uploadPhoto(password, photo)
     .then((blob) => {
       localStorage.setItem("profilePhotoURL", URL.createObjectURL(blob));
@@ -212,21 +212,19 @@ async function updateEmail(index: number, newEmail: string) {
       alert.value.showMessage(error.message, AlertType.ERROR);
     });
 }
-onMounted(() => {});
 </script>
 <template>
-  <div class="grid h-full overflow-hidden">
+  <div class="flex flex-col h-full overflow-hidden relative">
+    <div class="absolute p-2 w-full">
+      <Alert ref="alert" />
+    </div>
     <section
       class="sm:flex items-center justify-between text-xl font-bold border-b border-gray-300 p-1 px-2"
     >
       <h1>Profile</h1>
-      <button class="btn btn-xs btn-primary">
-        <Save :size="18" />
-      </button>
     </section>
 
-    <section class="overflow-scroll h-full">
-      <Alert class="mb-4" ref="alert" />
+    <section class="overflow-scroll h-full p-4">
       <div class="flex justify-center">
         <ProfilePhoto @update="updatePhoto" />
       </div>
