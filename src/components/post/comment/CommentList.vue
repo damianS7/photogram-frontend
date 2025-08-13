@@ -3,33 +3,45 @@ import { useUtil } from "@/composables/useUtil";
 import { useCommentStore } from "@/stores/comment";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 const { toDatetime } = useUtil();
+
+// props
 const props = defineProps<{
   postId: number;
 }>();
 
+// store
+const commentStore = useCommentStore();
+
+// data
 const commentListRef = ref<HTMLDivElement | null>(null);
 const page = ref(0);
-const commentStore = useCommentStore();
 const comments = computed(() => {
   return commentStore.comments;
 });
 
+// functions
 async function detectBottom() {
   const { scrollTop, scrollHeight, clientHeight } = commentListRef.value as HTMLDivElement;
 
   // detect when hits the bottom
   if (scrollTop + clientHeight >= scrollHeight) {
+    // if page is the last one, do nothing
     if (
       commentStore.pagination?.totalPages &&
       page.value >= commentStore.pagination?.totalPages - 1
     ) {
       return;
     }
+
+    // next page
     page.value += 1;
+
+    // fetch comments for the next page
     await commentStore.fetchComments(props.postId, page.value);
   }
 }
 
+// lifecycle hooks
 onMounted(async () => {
   // disable body scroll
   document.body.style.overflow = "hidden";
