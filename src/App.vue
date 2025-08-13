@@ -1,13 +1,6 @@
 <script setup lang="ts">
 import FullScreenLoadingSpinner from "@/components/spinner/FullScreenLoadingSpinner.vue";
-import { onMounted } from "vue";
-import { useAuthStore } from "@/stores/auth";
 import ModalManager from "@/components/modals/ModalManager.vue";
-const authStore = useAuthStore();
-
-onMounted(async () => {
-  // await authStore.initialize();
-});
 </script>
 <template>
   <div>
