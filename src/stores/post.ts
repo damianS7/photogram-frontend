@@ -1,8 +1,8 @@
-// stores/customerStore.ts
+// stores/usePostStore.ts
 import { defineStore } from "pinia";
 import { postService } from "@/services/postService";
 import type { Post } from "@/types/Post";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import type { PaginatedResponse } from "@/types/PaginatedResponse";
 
 export const usePostStore = defineStore("post", () => {
