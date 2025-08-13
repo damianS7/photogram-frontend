@@ -18,22 +18,15 @@ export const useCustomerStore = defineStore("customer", {
 
   actions: {
     async initialize() {
-      const token = localStorage.getItem("token");
-      if (!token) return;
+      const customer = await customerService.getCustomer();
+      this.setCustomer(customer);
 
-      try {
-        const customer = await customerService.getCustomer();
-        this.setCustomer(customer);
-
-        if (customer.profile.avatarFilename) {
-          const photo = await customerService.getPhoto(customer.profile.avatarFilename);
-          localStorage.setItem("profilePhotoURL", URL.createObjectURL(photo));
-        }
-
-        this.initialized = true;
-      } catch (error) {
-        console.error(error);
+      if (customer.profile.avatarFilename) {
+        const photo = await customerService.getPhoto(customer.profile.avatarFilename);
+        localStorage.setItem("profilePhotoURL", URL.createObjectURL(photo));
       }
+
+      this.initialized = true;
     },
 
     async updateProfile(currentPassword: string, updates: Record<string, any>) {

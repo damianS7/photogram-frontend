@@ -1,67 +1,45 @@
 // stores/customerStore.ts
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import type { Comment } from "@/types/Comment";
 import { commentService } from "@/services/commentService";
 import type { PaginatedResponse } from "@/types/PaginatedResponse";
 
 export const useCommentStore = defineStore("comment", () => {
-  const comments = ref<Comment[]>([]); // record id comment
+  const comments = ref<Comment[]>([]);
   const pagination = ref<PaginatedResponse>();
 
-  // getters
-  const getComments = computed(() => (postId: number) => {
-    return comments.value.filter((comment: Comment) => {
-      return comment.postId === postId;
-    });
-  });
-
+  // fetch the comments for the given post by id and specific page if provided
   async function fetchComments(postId: number, page?: number): Promise<Comment[]> {
-    const token = localStorage.getItem("token");
-    if (!token) return comments.value;
+    const paginatedPosts = (await commentService.getComments(postId, page)) as PaginatedResponse;
+    pagination.value = paginatedPosts;
 
-    try {
-      const paginatedPosts = (await commentService.getComments(postId, page)) as PaginatedResponse;
-
-      if (page && typeof page === "number") {
-        comments.value.push(...paginatedPosts.content);
-        return comments.value;
-      }
+    // if the page is not zero, append to existing array
+    if (page && page > 0) {
+      comments.value.push(...paginatedPosts.content);
+    } else {
+      // if page is undefined or zero, set the content to the comments array
       comments.value = paginatedPosts.content;
-      pagination.value = paginatedPosts;
-    } catch (error) {
-      console.error(error);
     }
+
     return comments.value;
   }
 
+  // add a new comment for the given post by id
   async function postComment(postId: number, comment: string) {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    try {
-      const aComment = (await commentService.postComment(postId, comment)) as Comment;
-      comments.value.unshift(aComment);
-      return aComment;
-    } catch (error) {
-      console.error(error);
-    }
+    const aComment = (await commentService.postComment(postId, comment)) as Comment;
+    comments.value.unshift(aComment);
+    return aComment;
   }
 
+  // delete a comment by its id
   async function deleteComment(commentId: number) {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    try {
-      await commentService.deleteComment(commentId);
-      const index = comments.value.findIndex((comment) => comment.id === commentId);
-      if (index !== -1) {
-        comments.value.splice(index, 1);
-      }
-    } catch (error) {
-      console.error(error);
+    await commentService.deleteComment(commentId);
+    const index = comments.value.findIndex((comment) => comment.id === commentId);
+    if (index !== -1) {
+      comments.value.splice(index, 1);
     }
   }
 
-  return { comments, deleteComment, postComment, fetchComments, getComments, pagination };
+  return { comments, deleteComment, postComment, fetchComments, pagination };
 });
