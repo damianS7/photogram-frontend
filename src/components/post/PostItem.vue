@@ -8,7 +8,9 @@ import CommentList from "./comment/CommentList.vue";
 import { useUtil } from "@/composables/useUtil";
 import { useAuth } from "@/composables/useAuth";
 import LikePanel from "./like/LikePanel.vue";
+import Alert from "../Alert.vue";
 import { useFeedStore } from "@/stores/feed";
+import { AlertType } from "@/types/AlertType";
 const { isCurrentUserOwner } = useAuth();
 const { toDatetime } = useUtil();
 
@@ -27,12 +29,14 @@ const postStore = usePostStore();
 const imagePreview = ref<string | null>(props.post.photoFilename);
 const comment = ref("");
 const commentTextareaRef = ref<HTMLDivElement | null>(null);
+const alert = ref();
 
 // methods
 async function postComment() {
   // no empty comment allowed
   if (comment.value.trim() === "") {
     comment.value = "";
+    alert.value.showMessage("Empty comments are not allowed.", AlertType.INFO);
     return;
   }
 
@@ -40,7 +44,7 @@ async function postComment() {
     await commentStore.postComment(props.post.id, comment.value);
     comment.value = "";
   } catch (error) {
-    // TODO show error message in a div??
+    alert.value.showMessage("Failed to post comment.", AlertType.ERROR);
   }
 }
 
@@ -55,7 +59,7 @@ async function deletePost() {
       await postStore.deletePost(props.post.id);
       feedStore.updateFeed({ totalPosts: -1 });
     } catch (error) {
-      // TODO show error message
+      alert.value.showMessage("Failed to delete post.", AlertType.ERROR);
     }
   }
 }
@@ -85,7 +89,10 @@ onMounted(async () => {
     </div>
 
     <!-- comments list and form -->
-    <div class="w-1/2 flex flex-col">
+    <div class="w-1/2 flex flex-col relative">
+      <div class="absolute p-1 w-full">
+        <Alert ref="alert" />
+      </div>
       <!-- post header -->
       <div class="border-b p-4 font-semibold text-sm flex justify-between items-center">
         <button

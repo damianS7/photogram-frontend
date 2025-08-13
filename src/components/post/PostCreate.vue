@@ -3,24 +3,31 @@ import { useModalStore } from "@/stores/modal";
 import { ref } from "vue";
 import { usePostStore } from "@/stores/post";
 import { useFeedStore } from "@/stores/feed";
+import Alert from "../Alert.vue";
+import { AlertType } from "@/types/AlertType";
 
+// props
 defineProps<{
   title?: string;
   message?: string;
 }>();
 
+// store
 const postStore = usePostStore();
 const feedStore = useFeedStore();
 const modalStore = useModalStore();
 
-function closeModal() {
-  modalStore.resolve(false);
-}
-
+// data
 const image = ref<File | null>(null);
 const imagePreview = ref<string | null>(null);
 const caption = ref("");
 const isSubmitting = ref(false);
+const alert = ref();
+
+// methods
+function closeModal() {
+  modalStore.resolve(false);
+}
 
 function handleFileChange(event: Event) {
   const file = (event.target as HTMLInputElement).files?.[0];
@@ -32,32 +39,37 @@ function handleFileChange(event: Event) {
 
 async function handleSubmit() {
   if (!image.value) return;
-
   isSubmitting.value = true;
-  // emit("submit", {
-  //   image: image.value,
-  //   caption: caption.value,
-  // });
 
-  await postStore.uploadPhoto(image.value).then((filename) => {
-    postStore.createPost(filename, caption.value).then((post) => {
-      feedStore.updateFeed({ totalPosts: feedStore.feed.totalPosts + 1 });
-    });
-  });
+  let filename = "";
 
-  // clean
-  isSubmitting.value = false;
-  image.value = null;
-  imagePreview.value = null;
-  caption.value = "";
+  try {
+    filename = await postStore.uploadPhoto(image.value);
+  } catch (error) {
+    alert.value.showMessage("Failed to upload photo.", AlertType.ERROR);
+  }
 
-  closeModal();
+  try {
+    postStore.createPost(filename, caption.value);
+    feedStore.updateFeed({ totalPosts: 1 });
+    // clean
+    isSubmitting.value = false;
+    image.value = null;
+    imagePreview.value = null;
+    caption.value = "";
+    closeModal();
+  } catch (error) {
+    alert.value.showMessage("Failed to create post.", AlertType.ERROR);
+  }
 }
 </script>
 <template>
   <div
-    class="bg-white rounded-lg shadow-lg w-full max-w-md h-full max-h-screen overflow-y-auto flex flex-col"
+    class="bg-white rounded-lg shadow-lg w-full max-w-md h-full max-h-screen overflow-y-auto flex flex-col relative"
   >
+    <div class="absolute p-1 w-full">
+      <Alert ref="alert" />
+    </div>
     <!-- title -->
     <div class="border-b px-4 py-3 text-center font-semibold shrink-0">{{ title }}</div>
 

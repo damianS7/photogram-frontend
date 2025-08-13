@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { useModalStore } from "@/stores/modal";
 import type { Post } from "@/types/Post";
+
+// props
 const props = defineProps<{
   posts: Post[];
 }>();
 
+// store
 const modalStore = useModalStore();
+
+// functions
 async function showPost(post: Post) {
   await modalStore.open("PostItem", {
     post,

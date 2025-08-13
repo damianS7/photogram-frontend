@@ -6,82 +6,50 @@ import { computed, ref } from "vue";
 import type { PaginatedResponse } from "@/types/PaginatedResponse";
 
 export const usePostStore = defineStore("post", () => {
-  const customerId = 0;
   const posts = ref<Post[]>([]);
   const pagination = ref<PaginatedResponse>();
 
-  // getters
-  const getPosts = computed(() => posts.value);
-  const getPost = computed(() => (id: number) => {
-    return posts.value.forEach((post) => {
-      return post.id === id;
-    });
-  });
-
   async function fetchPosts(username: string, page?: number): Promise<Post[]> {
-    const token = localStorage.getItem("token");
-    if (!token) return posts.value;
+    const pPosts = (await postService.getPosts(username, page)) as PaginatedResponse;
+    for (const post of pPosts.content as Post[]) {
+      const resource = await postService.getPhoto(post.photoFilename);
+      post.photoFilename = URL.createObjectURL(resource);
+    }
 
-    try {
-      const pPosts = (await postService.getPosts(username, page)) as PaginatedResponse;
-      for (const post of pPosts.content as Post[]) {
-        const resource = await postService.getPhoto(post.photoFilename);
-        post.photoFilename = URL.createObjectURL(resource);
-      }
-
-      if (page && posts.value.length > 0) {
-        pagination.value = pPosts;
-        posts.value.push(...pPosts.content);
-      } else {
-        posts.value = pPosts.content;
-      }
-    } catch (error) {
-      console.error(error);
+    if (page && posts.value.length > 0) {
+      pagination.value = pPosts;
+      posts.value.push(...pPosts.content);
+    } else {
+      posts.value = pPosts.content;
     }
     return posts.value;
   }
 
   async function createPost(filename: string, description: string) {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    try {
-      const post = (await postService.createPost(filename, description)) as Post;
-      const resource = await postService.getPhoto(post.photoFilename);
-      post.photoFilename = URL.createObjectURL(resource);
-      posts.value.push(post);
-      return post;
-    } catch (error) {
-      console.error(error);
-    }
+    const post = (await postService.createPost(filename, description)) as Post;
+    const resource = await postService.getPhoto(post.photoFilename);
+    post.photoFilename = URL.createObjectURL(resource);
+    posts.value.unshift(post);
+    return post;
   }
 
   async function deletePost(postId: number) {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    try {
-      await postService.deletePost(postId);
-      const index = posts.value.findIndex((post) => post.id === postId);
-      if (index !== -1) {
-        posts.value.splice(index, 1);
-      }
-    } catch (error) {
-      console.error(error);
+    await postService.deletePost(postId);
+    const index = posts.value.findIndex((post) => post.id === postId);
+    if (index !== -1) {
+      posts.value.splice(index, 1);
     }
   }
 
-  async function uploadPhoto(file: File) {
-    const imageFilename = await postService.uploadPhoto(file);
-    return imageFilename;
+  // upload the photo and returns filename
+  async function uploadPhoto(file: File): Promise<string> {
+    return await postService.uploadPhoto(file);
   }
 
   return {
     pagination,
-    getPosts,
     fetchPosts,
     posts,
-    customerId,
     uploadPhoto,
     createPost,
     deletePost,
