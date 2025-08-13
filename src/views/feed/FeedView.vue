@@ -11,26 +11,28 @@ import { customerService } from "@/services/customerService";
 import { useAuth } from "@/composables/useAuth";
 const { isCurrentUserOwner } = useAuth();
 
+// props
 defineProps<{
   username?: string;
 }>();
-const page = ref(0);
-const loading = ref(true);
-const usernameExist = ref(false);
+
+// store
 const modalStore = useModalStore();
 const customerStore = useCustomerStore();
 const feedStore = useFeedStore();
-const route = useRoute();
 const postStore = usePostStore();
 
+// data
+const page = ref(0);
+const loading = ref(true);
+const usernameExist = ref(false);
+const route = useRoute();
 const feed = computed(() => {
   return feedStore.feed;
 });
-
 const posts = computed(() => {
   return postStore.posts;
 });
-
 const username = computed(() => {
   return (route.params.username || customerStore.customer.profile?.username) as string;
 });
@@ -41,8 +43,9 @@ watch(
   { immediate: true }
 );
 
+// functions
 async function createPost() {
-  const post = await modalStore.open("PostCreate", {
+  await modalStore.open("PostCreate", {
     title: "Create a new post",
   });
 }
@@ -76,6 +79,7 @@ async function detectBottom() {
   }
 }
 
+// lifecycle hooks
 onMounted(() => {
   window.addEventListener("scroll", detectBottom);
 });

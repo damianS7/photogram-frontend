@@ -10,69 +10,44 @@ export const useFollowStore = defineStore("follow", () => {
 
   // fetch followers for the given customer by id
   async function fetchCustomerFollowers(customerId: number) {
-    try {
-      followers.value = (await followService.getFollowers(customerId)) as Follow[];
-    } catch (error) {
-      console.error("Failed to fetch followers.");
-      throw error;
-    }
+    followers.value = (await followService.getFollowers(customerId)) as Follow[];
 
     // for every follower ...
     for (const follower of followers.value) {
       const imageFilename = follower.followerCustomerProfileImageFilename;
-      try {
-        // fetch the photo
-        const resource = await customerService.getPhoto(imageFilename);
-        follower.followerCustomerProfileImageFilename = URL.createObjectURL(resource);
-      } catch (error) {
-        throw error;
-      }
+      // fetch the photo
+      const resource = await customerService.getPhoto(imageFilename);
+      follower.followerCustomerProfileImageFilename = URL.createObjectURL(resource);
     }
   }
 
   // fetch followings for the given customer by id
   async function fetchFollowingCustomers(customerId: number) {
-    try {
-      following.value = (await followService.getFollowing(customerId)) as Follow[];
-    } catch (error) {
-      throw error;
-    }
+    following.value = (await followService.getFollowing(customerId)) as Follow[];
 
     // for every following customer ...
     for (const followed of following.value) {
       const imageFilename = followed.followedCustomerProfileImageFilename;
-      try {
-        // fetch the photo
-        const resource = await customerService.getPhoto(imageFilename);
-        followed.followedCustomerProfileImageFilename = URL.createObjectURL(resource);
-      } catch (error) {
-        throw error;
-      }
+      // fetch the photo
+      const resource = await customerService.getPhoto(imageFilename);
+      followed.followedCustomerProfileImageFilename = URL.createObjectURL(resource);
     }
   }
 
   // follow the given customer by id
   async function follow(customerId: number): Promise<Follow> {
-    try {
-      const follow = await followService.follow(customerId);
-      followers.value.push(follow);
-      return follow;
-    } catch (error) {
-      throw error;
-    }
+    const follow = await followService.follow(customerId);
+    followers.value.push(follow);
+    return follow;
   }
 
   // unfollow the given customer by id
   async function unfollow(customerId: number) {
-    try {
-      await followService.unfollow(customerId);
+    await followService.unfollow(customerId);
 
-      const index = following.value.findIndex((follow) => follow.followedCustomerId === customerId);
-      if (index !== -1) {
-        following.value.splice(index, 1);
-      }
-    } catch (error) {
-      throw error;
+    const index = following.value.findIndex((follow) => follow.followedCustomerId === customerId);
+    if (index !== -1) {
+      following.value.splice(index, 1);
     }
   }
 

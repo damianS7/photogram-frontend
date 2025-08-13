@@ -8,20 +8,13 @@ import { customerService } from "@/services/customerService";
 export const useFeedStore = defineStore("feed", () => {
   const feed = ref<Feed>();
 
+  // fetch the feed data for the given username
   async function fetchFeed(username: string): Promise<Feed> {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw Error("Token not found.");
-    }
+    feed.value = await feedService.getFeed(username);
 
-    try {
-      feed.value = await feedService.getFeed(username);
-      const resource = await customerService.getPhoto(feed.value.profileImageFilename);
-      feed.value.profileImageFilename = URL.createObjectURL(resource);
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+    // get the photo profile
+    const resource = await customerService.getPhoto(feed.value.profileImageFilename);
+    feed.value.profileImageFilename = URL.createObjectURL(resource);
 
     return feed.value;
   }
@@ -42,10 +35,6 @@ export const useFeedStore = defineStore("feed", () => {
     if (!feed.value) {
       return;
     }
-    // const followerCount = feedStore.feed?.followers as number;
-    // if (typeof followerCount !== "number") {
-    //   return;
-    // }
 
     if (typeof fields.followers === "number") {
       feed.value.followers += fields.followers;

@@ -5,11 +5,16 @@ import type { Feed } from "@/types/Feed";
 import { useModalStore } from "@/stores/modal";
 import { useAuth } from "@/composables/useAuth";
 const { isCurrentUserOwner } = useAuth();
+
+// props
 const props = defineProps<{
   feed: Feed;
 }>();
 
+// store
 const modalStore = useModalStore();
+
+// functions
 async function showFollowers() {
   await modalStore.open("FollowersList", {
     customerId: useCustomerStore().customer.id,
