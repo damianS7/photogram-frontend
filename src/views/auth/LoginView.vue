@@ -37,7 +37,7 @@ const resolver = ref(
   })
 );
 
-const onFormSubmit = async () => {
+const onFormSubmit = () => {
   let email = form.value.email;
   let password = form.value.password;
   const result = resolver.value.safeParse(form.value);
@@ -49,7 +49,7 @@ const onFormSubmit = async () => {
 
   // clean errors
   errors.value = {};
-  await authStore
+  authStore
     .login(email, password)
     .then(() => {
       redirectBackToLastPage();
