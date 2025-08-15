@@ -1,4 +1,4 @@
-export function useUtil() {
+export function dateUtils() {
   function toDate(dateStr: string): string {
     const date = new Date(dateStr);
     return date.toLocaleDateString("en-GB");

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useUtil } from "@/composables/useUtil";
+import { dateUtils } from "@/utils/date";
 import { useCommentStore } from "@/stores/comment";
 import { computed, onMounted, onUnmounted, ref } from "vue";
-const { toDatetime } = useUtil();
+const { toDatetime } = dateUtils();
 
 // props
 const props = defineProps<{

@@ -5,14 +5,14 @@ import type { Post } from "@/types/Post";
 import { usePostStore } from "@/stores/post";
 import { useCommentStore } from "@/stores/comment";
 import CommentList from "./comment/CommentList.vue";
-import { useUtil } from "@/composables/useUtil";
-import { useAuth } from "@/composables/useAuth";
+import { dateUtils } from "@/utils/date";
+import { authUtils } from "@/utils/auth";
 import LikePanel from "./like/LikePanel.vue";
 import Alert from "../Alert.vue";
 import { useFeedStore } from "@/stores/feed";
 import { AlertType } from "@/types/AlertType";
-const { isCurrentUserOwner } = useAuth();
-const { toDatetime } = useUtil();
+const { isCurrentUserOwner } = authUtils();
+const { toDatetime } = dateUtils();
 
 // props
 const props = defineProps<{

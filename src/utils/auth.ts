@@ -1,8 +1,7 @@
 import { useCustomerStore } from "@/stores/customer";
 import type { Customer } from "@/types/Customer";
 
-// src/composables/useAuth.ts
-export function useAuth() {
+export function authUtils() {
   const isCurrentUserOwner = (customerId: number) => {
     const customer: Customer = useCustomerStore().getLoggedCustomer;
     if (customer.id === customerId) {
