@@ -72,7 +72,6 @@ function closeModal() {
 // lifececycle hooks
 onMounted(async () => {
   commentTextareaRef.value?.focus();
-  await commentStore.fetchComments(props.post.id);
 });
 </script>
 <template>
