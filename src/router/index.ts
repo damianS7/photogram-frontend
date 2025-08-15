@@ -134,38 +134,43 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, _from, next) => {
-  if (!to.meta.requiresAuth) {
-    next();
-    return;
-  }
-
-  // auth required from here
   const authStore = useAuthStore();
   if (!authStore.initialized) {
     await authStore.initialize();
   }
-
   const isAuthenticated = authStore.isAuthenticated;
 
-  // Check if the route requires authentication
+  // if authentication is required but you are not logged
   if (to.meta.requiresAuth && !isAuthenticated) {
-    // if not authenticated, redirect to login
+    // redirect to login
     return next({
       path: "/auth/login",
       query: { redirect: to.fullPath },
     });
   }
 
-  // authenticated from here
-  const role = authStore.getPayload()?.role || "USER";
-  // Check if the route requires admin role
-  if (to.meta.role && to.meta.role !== role) {
+  // if you access to /auth being logged ...
+  if (to.path.includes("/auth") && isAuthenticated) {
+    // redirects to /
     return next({
       path: "/",
     });
   }
 
-  // If the user is authenticated, allow access to the route
+  // from now on you are authenticated
+  // if the route requires a role ...
+  if (to.meta.role) {
+    // get the user role
+    const role = authStore.getPayload()?.role || "USER";
+
+    // compare them
+    if (role !== to.meta.role) {
+      return next({
+        path: "/404",
+      });
+    }
+  }
+
   next();
 });
 
