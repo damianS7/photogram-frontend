@@ -31,10 +31,6 @@ nav,
   @apply bg-gray-200;
 }
 
-.container {
-  @apply p-2;
-}
-
 nav {
   @apply border-r-2 border-solid border-gray-300;
 }
