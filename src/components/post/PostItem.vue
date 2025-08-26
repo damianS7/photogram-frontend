@@ -95,7 +95,7 @@ onMounted(async () => {
       <!-- post header -->
       <div class="border-b p-4 font-semibold text-sm flex justify-between items-center">
         <button
-          v-if="isCurrentUserOwner(post.customerId)"
+          v-if="isCurrentUserOwner(post.authorId)"
           @click="deletePost"
           class="btn btn-xs btn-danger"
         >
