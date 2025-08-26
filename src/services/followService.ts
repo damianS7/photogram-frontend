@@ -1,4 +1,5 @@
 import type { Follow } from "@/types/Follow";
+import type { PaginatedResponse } from "@/types/PaginatedResponse";
 
 const API = import.meta.env.VITE_APP_API_URL;
 const authHeader = () => {
@@ -11,11 +12,14 @@ const authHeader = () => {
 
 export const followService = {
   // get followers for the given customer by id
-  async getFollowers(customerId: number): Promise<Follow[]> {
-    const response = await fetch(`${API}/customers/${customerId}/followers`, {
-      method: "GET",
-      headers: authHeader(),
-    });
+  async getFollowers(customerId: number, page?: number): Promise<PaginatedResponse> {
+    const response = await fetch(
+      `${API}/customers/${customerId}/followers?page=${page}&sort=createdAt,DESC`,
+      {
+        method: "GET",
+        headers: authHeader(),
+      }
+    );
 
     if (response.status !== 200) {
       const json = await response.json();
@@ -26,11 +30,14 @@ export const followService = {
   },
 
   // get following for the given customer by id
-  async getFollowing(customerId: number): Promise<Follow[]> {
-    const response = await fetch(`${API}/customers/${customerId}/following`, {
-      method: "GET",
-      headers: authHeader(),
-    });
+  async getFollowing(customerId: number, page?: number): Promise<PaginatedResponse> {
+    const response = await fetch(
+      `${API}/customers/${customerId}/following?page=${page}&sort=createdAt,DESC`,
+      {
+        method: "GET",
+        headers: authHeader(),
+      }
+    );
 
     if (response.status !== 200) {
       const json = await response.json();
