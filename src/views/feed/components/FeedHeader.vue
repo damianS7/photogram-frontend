@@ -3,8 +3,8 @@ import { useCustomerStore } from "@/stores/customer";
 import FollowButton from "@/components/follow/FollowButton.vue";
 import type { Feed } from "@/types/Feed";
 import { useModalStore } from "@/stores/modal";
-import { useAuth } from "@/composables/useAuth";
-const { isCurrentUserOwner } = useAuth();
+import { authUtils } from "@/utils/auth";
+const { isCurrentUserOwner } = authUtils();
 
 // props
 const props = defineProps<{
@@ -34,7 +34,7 @@ async function showFollowing() {
       <img
         :src="feed.profileImageFilename"
         alt="Profile photo"
-        class="rounded-full max-w-32 bg-gray-300"
+        class="rounded-full object-cover h-24 w-24 bg-gray-300"
       />
     </div>
 
