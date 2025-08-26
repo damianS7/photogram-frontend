@@ -91,8 +91,14 @@ const routes: Array<RouteRecordRaw> = [
         name: "register",
         component: RegisterView,
       },
+    ],
+  },
+  {
+    path: "/accounts",
+    component: AuthLayout,
+    children: [
       {
-        path: "activate-account/:token?",
+        path: "activate/:token?",
         name: "activate-account",
         component: ActivateView,
       },
