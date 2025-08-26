@@ -1,4 +1,5 @@
 import type { CustomerRegistration } from "@/types/CustomerRegistration";
+import type { JsonResponse } from "@/types/JsonResponse";
 const API = import.meta.env.VITE_APP_API_URL;
 
 export const authService = {
@@ -19,7 +20,7 @@ export const authService = {
   },
 
   async register(fields: CustomerRegistration) {
-    const response = await fetch(`${API}/auth/register`, {
+    const response = await fetch(`${API}/accounts/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(fields),
@@ -47,5 +48,35 @@ export const authService = {
       throw new Error(error.message || "Token validation failed.");
     }
     return true;
+  },
+  async activateAccount(token: string): Promise<JsonResponse> {
+    const response = await fetch(`${API}/accounts/activate/${token}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Token validation failed.");
+    }
+    return (await response.json()) as JsonResponse;
+  },
+  async resendAccountActivation(email: string): Promise<JsonResponse> {
+    const response = await fetch(`${API}/accounts/resend-activation`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to send activation email.");
+    }
+
+    return (await response.json()) as JsonResponse;
   },
 };

@@ -13,7 +13,7 @@ const authHeader = () => {
 
 export const customerService = {
   async getCustomer(): Promise<Customer> {
-    const response = await fetch(`${API}/customers/me`, {
+    const response = await fetch(`${API}/customers`, {
       method: "GET",
       headers: authHeader(),
     });
@@ -30,7 +30,7 @@ export const customerService = {
     currentPassword: string,
     fieldsToUpdate: Record<string, any>
   ): Promise<Profile> {
-    const response = await fetch(`${API}/customers/me/profile`, {
+    const response = await fetch(`${API}/customers/profile`, {
       method: "PATCH",
       headers: authHeader(),
       body: JSON.stringify({ currentPassword, fieldsToUpdate }),
@@ -44,7 +44,7 @@ export const customerService = {
   },
 
   async patchEmail(currentPassword: string, newEmail: string): Promise<Customer> {
-    const response = await fetch(`${API}/customers/me/email`, {
+    const response = await fetch(`${API}/customers/email`, {
       method: "PATCH",
       headers: authHeader(),
       body: JSON.stringify({ currentPassword, newEmail }),
@@ -58,7 +58,7 @@ export const customerService = {
   },
 
   async changePassword(currentPassword: string, newPassword: string) {
-    const response = await fetch(`${API}/auth/customers/password`, {
+    const response = await fetch(`${API}/accounts/customers/password`, {
       method: "PATCH",
       headers: authHeader(),
       body: JSON.stringify({ currentPassword, newPassword }),
@@ -69,8 +69,8 @@ export const customerService = {
     }
   },
 
-  async getPhoto(filename: string): Promise<Blob> {
-    const response = await fetch(`${API}/customers/profile/photo/${filename}`, {
+  async getPhoto(customerId: number): Promise<Blob> {
+    const response = await fetch(`${API}/customers/${customerId}/profile/photo`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -89,7 +89,7 @@ export const customerService = {
     formData.append("file", file);
     formData.append("currentPassword", currentPassword);
 
-    const response = await fetch(`${API}/customers/me/profile/photo`, {
+    const response = await fetch(`${API}/customers/profile/photo`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -105,7 +105,7 @@ export const customerService = {
   },
 
   async usernameExists(username: string): Promise<boolean> {
-    const response = await fetch(`${API}/customers/profile/check-username/${username}`, {
+    const response = await fetch(`${API}/customers/profile/username/${username}/exists`, {
       method: "GET",
       headers: authHeader(),
     });

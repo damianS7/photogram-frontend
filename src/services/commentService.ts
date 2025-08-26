@@ -30,7 +30,7 @@ export const commentService = {
   },
 
   async postComment(postId: number, comment: string): Promise<Comment> {
-    const response = await fetch(`${API}/posts/${postId}/comments`, {
+    const response = await fetch(`${API}/posts/${postId}/comment`, {
       method: "POST",
       headers: authHeader(),
       body: JSON.stringify({ postId, comment }),
