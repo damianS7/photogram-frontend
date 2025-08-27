@@ -84,7 +84,7 @@ onMounted(async () => {
         alt="Preview"
         class="object-contain max-h-full max-w-full"
       />
-      <div v-else class="text-white">No image selected</div>
+      <div v-else class="text-white">No image found.</div>
     </div>
 
     <!-- comments list and form -->

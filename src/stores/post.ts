@@ -12,8 +12,12 @@ export const usePostStore = defineStore("post", () => {
   async function fetchPosts(username: string, page?: number): Promise<Post[]> {
     const pPosts = (await postService.getPosts(username, page)) as PaginatedResponse;
     for (const post of pPosts.content as Post[]) {
-      const resource = await postService.getPhoto(post.photoFilename);
-      post.photoFilename = URL.createObjectURL(resource);
+      try {
+        const resource = await postService.getPostPhoto(post.id);
+        post.photoFilename = URL.createObjectURL(resource);
+      } catch (error) {
+        post.photoFilename = null;
+      }
     }
 
     if (page && posts.value.length > 0) {
@@ -27,7 +31,7 @@ export const usePostStore = defineStore("post", () => {
 
   async function createPost(filename: string, description: string) {
     const post = (await postService.createPost(filename, description)) as Post;
-    const resource = await postService.getPhoto(post.photoFilename);
+    const resource = await postService.getPostPhoto(post.id);
     post.photoFilename = URL.createObjectURL(resource);
     posts.value.unshift(post);
     return post;
