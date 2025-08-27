@@ -21,9 +21,11 @@ export const useCustomerStore = defineStore("customer", {
       const customer = await customerService.getCustomer();
       this.setCustomer(customer);
 
-      if (customer.profile.avatarFilename) {
-        const photo = await customerService.getPhoto(customer.profile.avatarFilename);
+      try {
+        const photo = await customerService.getPhoto(customer.id);
         localStorage.setItem("profilePhotoURL", URL.createObjectURL(photo));
+      } catch (error) {
+        localStorage.setItem("profilePhotoURL", "/public/default-avatar.png");
       }
 
       this.initialized = true;
