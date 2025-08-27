@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { authService } from "@/services/authService";
 import type { JsonResponse } from "@/types/JsonResponse";
 
-const email = ref("taylor@demo.com");
+const email = ref("");
 const message = ref({
   content: "",
   isError: false,
