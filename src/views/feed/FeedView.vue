@@ -8,8 +8,8 @@ import { usePostStore } from "@/stores/post";
 import { useModalStore } from "@/stores/modal";
 import { useFeedStore } from "@/stores/feed";
 import { customerService } from "@/services/customerService";
-import { useAuth } from "@/composables/useAuth";
-const { isCurrentUserOwner } = useAuth();
+import { authUtils } from "@/utils/auth";
+const { isCurrentUserOwner } = authUtils();
 
 // props
 defineProps<{
@@ -96,7 +96,7 @@ onUnmounted(() => {
         +
       </button>
     </div>
-    <PostList v-if="posts" :posts="posts" />
+    <PostList :posts="posts" />
   </div>
-  <div v-if="!usernameExist && !loading">Username not found</div>
+  <div v-if="!usernameExist && !loading" class="flex w-full justify-center">Username not found</div>
 </template>
