@@ -6,7 +6,7 @@ import ConfirmPasswordModal from "@/components/modals/ConfirmPasswordModal.vue";
 import PostCreate from "@/components/post/PostCreate.vue";
 import PostItem from "@/components/post/PostItem.vue";
 import FollowersList from "@/components/follow/FollowersList.vue";
-import FollowedList from "@/components/follow/FollowedList.vue";
+import FollowedList from "@/components/follow/FollowingList.vue";
 import { onMounted, onUnmounted } from "vue";
 const modalStore = useModalStore();
 
