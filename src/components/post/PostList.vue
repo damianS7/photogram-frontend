@@ -25,7 +25,6 @@ async function showPost(post: Post) {
       class="mt-8 grid grid-cols-3 gap-0.5 mx-auto sm:max-w-2xl"
     >
       <div v-for="post in posts" :key="post.id" @click="showPost(post)" class="flex w-full h-72">
-        {{ post.photoFilename }}
         <img
           v-if="post.photoFilename"
           :src="post.photoFilename"
