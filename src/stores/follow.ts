@@ -31,9 +31,7 @@ export const useFollowStore = defineStore("follow", () => {
         const resource = await customerService.getPhoto(follower.followerCustomerId);
         follower.followerCustomerProfileImageFilename = URL.createObjectURL(resource);
       } catch (error) {
-        // TODO set dummy avatar from assets!
-        // or just an icon ?
-        follower.followerCustomerProfileImageFilename = "/public/avatar.jpg";
+        follower.followerCustomerProfileImageFilename = "/public/default-avatar.png";
       }
     }
   }
@@ -58,7 +56,7 @@ export const useFollowStore = defineStore("follow", () => {
         const resource = await customerService.getPhoto(followed.followedCustomerId);
         followed.followedCustomerProfileImageFilename = URL.createObjectURL(resource);
       } catch (error) {
-        followed.followedCustomerProfileImageFilename = "/public/avatar.jpg";
+        followed.followedCustomerProfileImageFilename = "/public/default-avatar.png";
       }
     }
   }

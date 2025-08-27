@@ -34,7 +34,7 @@ async function doOnBottom() {
   // next page
   page.value += 1;
 
-  // fetch comments for the next page
+  // fetch following for the next page
   await followStore.fetchFollowingCustomers(props.customerId, page.value);
 }
 
@@ -73,12 +73,6 @@ onMounted(async () => {
               v-if="follow.followedCustomerProfileImageFilename"
               alt="Profile Image"
               :src="follow.followedCustomerProfileImageFilename"
-              class="w-12 h-12 rounded-full object-cover"
-            />
-            <img
-              v-else
-              alt="Profile Image"
-              src="/public/avatar.jpg"
               class="w-12 h-12 rounded-full object-cover"
             />
             <router-link @click="closeModal" :to="`/@${follow.followedCustomerUsername}`">
