@@ -21,6 +21,11 @@ export const useCustomerStore = defineStore("customer", {
       const customer = await customerService.getCustomer();
       this.setCustomer(customer);
 
+      // Set default avatar if not present
+      if (customer.profile.avatarFilename === null) {
+        localStorage.setItem("profilePhotoURL", "/public/default-avatar.png");
+      }
+
       try {
         const photo = await customerService.getPhoto(customer.id);
         localStorage.setItem("profilePhotoURL", URL.createObjectURL(photo));
