@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref, useTemplateRef } from "vue";
 import { useFollowStore } from "@/stores/follow";
 import { useModalStore } from "@/stores/modal";
 import FollowButton from "./FollowButton.vue";
 import type { Follow } from "@/types/Follow";
+import { useScrollBottonDetect } from "@/composables/useScrollBottomDetect";
 
 // props
 const props = defineProps<{
@@ -12,10 +13,31 @@ const props = defineProps<{
 
 // store
 const followStore = useFollowStore();
-const followed = computed(() => followStore.following as Follow[]);
 const modalStore = useModalStore();
 
+// data
+const page = ref(0);
+const followed = computed(() => followStore.following as Follow[]);
+
+const followerListRef = useTemplateRef("followingListRef");
+useScrollBottonDetect(followerListRef, doOnBottom);
+
 // functions
+async function doOnBottom() {
+  if (
+    followStore.followersPagination?.totalPages &&
+    page.value >= followStore.followersPagination?.totalPages - 1
+  ) {
+    return;
+  }
+
+  // next page
+  page.value += 1;
+
+  // fetch comments for the next page
+  await followStore.fetchFollowingCustomers(props.customerId, page.value);
+}
+
 function closeModal() {
   modalStore.resolve(false);
 }
@@ -26,7 +48,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <div class="bg-white rounded-lg shadow-lg w-full max-w-md h-[90vh] overflow-hidden flex flex-col">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-md h-[80vh] overflow-hidden flex flex-col">
     <!-- header -->
     <div class="border-b p-4 font-semibold text-sm flex justify-between items-center">
       <h2 class="text-xl font-semibold">Following</h2>
@@ -39,7 +61,7 @@ onMounted(async () => {
       </button>
     </div>
 
-    <div class="overflow-scroll p-4 h-full">
+    <div ref="followingListRef" class="overflow-scroll p-4 h-full">
       <div v-if="followed && followed.length > 0" class="space-y-4">
         <span
           v-for="follow in followed"
@@ -48,8 +70,15 @@ onMounted(async () => {
         >
           <div class="flex items-center gap-4">
             <img
+              v-if="follow.followedCustomerProfileImageFilename"
               alt="Profile Image"
               :src="follow.followedCustomerProfileImageFilename"
+              class="w-12 h-12 rounded-full object-cover"
+            />
+            <img
+              v-else
+              alt="Profile Image"
+              src="/public/avatar.jpg"
               class="w-12 h-12 rounded-full object-cover"
             />
             <router-link @click="closeModal" :to="`/@${follow.followedCustomerUsername}`">
