@@ -57,7 +57,7 @@ async function deletePost() {
   if (confirm) {
     try {
       await postStore.deletePost(props.post.id);
-      feedStore.updateFeed({ totalPosts: -1 });
+      feedStore.refreshFeed();
     } catch (error) {
       alert.value.showMessage("Failed to delete post.", AlertType.ERROR);
     }

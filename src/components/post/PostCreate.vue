@@ -51,7 +51,7 @@ async function handleSubmit() {
 
   try {
     postStore.createPost(filename, caption.value);
-    feedStore.updateFeed({ totalPosts: 1 });
+    feedStore.refreshFeed();
     // clean
     isSubmitting.value = false;
     image.value = null;
