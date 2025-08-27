@@ -13,8 +13,12 @@ export const useFeedStore = defineStore("feed", () => {
     feed.value = await feedService.getFeed(username);
 
     // get the photo profile
-    const resource = await customerService.getPhoto(feed.value.profileImageFilename);
-    feed.value.profileImageFilename = URL.createObjectURL(resource);
+    try {
+      const resource = await customerService.getPhoto(feed.value.customerId);
+      feed.value.profileImageFilename = URL.createObjectURL(resource);
+    } catch (error) {
+      feed.value.profileImageFilename = "/public/avatar.jpg";
+    }
 
     return feed.value;
   }
@@ -27,27 +31,5 @@ export const useFeedStore = defineStore("feed", () => {
     return await fetchFeed(feed.value.username);
   }
 
-  async function updateFeed(fields: {
-    totalPosts?: number;
-    followers?: number;
-    following?: number;
-  }) {
-    if (!feed.value) {
-      return;
-    }
-
-    if (typeof fields.followers === "number") {
-      feed.value.followers += fields.followers;
-    }
-
-    if (typeof fields.totalPosts === "number") {
-      feed.value.totalPosts += fields.totalPosts;
-    }
-
-    if (typeof fields.following === "number") {
-      feed.value.following += fields.following;
-    }
-  }
-
-  return { feed, fetchFeed, updateFeed };
+  return { feed, fetchFeed, refreshFeed };
 });

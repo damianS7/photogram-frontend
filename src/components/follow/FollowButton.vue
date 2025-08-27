@@ -10,25 +10,25 @@ const props = defineProps<{
   isFollowing?: boolean;
 }>();
 
-// data
-const isFollowing = ref(false);
-
 // store
 const followStore = useFollowStore();
 const feedStore = useFeedStore();
+
+// data
+const isFollowing = ref(false);
 
 // functions
 function follow() {
   followStore.follow(props.customerId).then(() => {
     isFollowing.value = true;
-    feedStore.updateFeed({ followers: 1 });
+    feedStore.refreshFeed();
   });
 }
 
 function unfollow() {
   followStore.unfollow(props.customerId).then(() => {
     isFollowing.value = false;
-    feedStore.updateFeed({ followers: -1 });
+    feedStore.refreshFeed();
   });
 }
 
