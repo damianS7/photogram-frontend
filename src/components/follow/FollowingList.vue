@@ -73,7 +73,7 @@ onMounted(async () => {
               v-if="follow.followedCustomerProfileImageFilename"
               alt="Profile Image"
               :src="follow.followedCustomerProfileImageFilename"
-              class="w-12 h-12 rounded-full object-cover"
+              class="w-12 h-12 rounded-full object-cover bg-gray-300"
             />
             <router-link @click="closeModal" :to="`/@${follow.followedCustomerUsername}`">
               {{ follow.followedCustomerUsername }}
