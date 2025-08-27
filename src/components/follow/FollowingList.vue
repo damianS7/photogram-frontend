@@ -19,14 +19,14 @@ const modalStore = useModalStore();
 const page = ref(0);
 const followed = computed(() => followStore.following as Follow[]);
 
-const followerListRef = useTemplateRef("followingListRef");
-useScrollBottonDetect(followerListRef, doOnBottom);
+const followingListRef = useTemplateRef("followingListRef");
+useScrollBottonDetect(followingListRef, doOnBottom);
 
 // functions
 async function doOnBottom() {
   if (
-    followStore.followersPagination?.totalPages &&
-    page.value >= followStore.followersPagination?.totalPages - 1
+    followStore.followingPagination?.totalPages &&
+    page.value >= followStore.followingPagination?.totalPages - 1
   ) {
     return;
   }
@@ -65,7 +65,7 @@ onMounted(async () => {
       <div v-if="followed && followed.length > 0" class="space-y-4">
         <span
           v-for="follow in followed"
-          :key="follow.id"
+          :key="follow.followedCustomerId"
           class="flex items-center justify-between w-full"
         >
           <div class="flex items-center gap-4">
