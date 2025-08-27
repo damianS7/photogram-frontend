@@ -6,6 +6,7 @@ import DashboardView from "@/views/admin/Dashboard.vue";
 import LoginView from "@/views/auth/LoginView.vue";
 import RegisterView from "@/views/auth/RegisterView.vue";
 import ResetPasswordView from "@/views/auth/password/reset/ResetPasswordView.vue";
+import ResetPasswordSetView from "@/views/auth/password/reset/ResetPasswordSetView.vue";
 import SettingsLayout from "@/layouts/SettingsLayout.vue";
 import ProfileView from "@/views/settings/profile/ProfileView.vue";
 import AccountView from "@/views/settings/account/AccountView.vue";
@@ -15,7 +16,6 @@ import NotificationsView from "@/views/settings/notifications/NotificationsView.
 import PrivacyView from "@/views/settings/privacy/PrivacyView.vue";
 import SecurityView from "@/views/settings/security/SecurityView.vue";
 import ActivateView from "@/views/auth/activation/ActivateView.vue";
-import RequestActivationTokenView from "@/views/auth/activation/ResendActivationView.vue";
 import ResendActivationView from "@/views/auth/activation/ResendActivationView.vue";
 
 const routes: Array<RouteRecordRaw> = [
@@ -108,9 +108,14 @@ const routes: Array<RouteRecordRaw> = [
         component: ResendActivationView,
       },
       {
-        path: "reset-password/:token?",
+        path: "reset-password",
         name: "reset-password",
         component: ResetPasswordView,
+      },
+      {
+        path: "reset-password/:token",
+        name: "reset-password-set",
+        component: ResetPasswordSetView,
       },
     ],
   },
