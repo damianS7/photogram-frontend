@@ -127,7 +127,7 @@ async function updateField(index: number, field: { name: string; value: string }
     .updateProfile(currentPassword, {
       [field.name]: field.value,
     })
-    .then((profile: any) => {
+    .then((_profile: any) => {
       formFields.value[index].value = field.value;
       alert.value.showMessage("Field successfully updated.", AlertType.SUCCESS);
     })
@@ -202,14 +202,17 @@ async function updateEmail(index: number, newEmail: string) {
 
   // request for update
   await customerStore
-    .patchEmail(currentPassword, newEmail)
-    .then((customer) => {
-      customerStore.setEmail(customer.email);
+    .updateEmail(currentPassword, newEmail)
+    .then(() => {
       formFields.value[index].value = newEmail;
       alert.value.showMessage("Field successfully updated.", AlertType.SUCCESS);
     })
-    .catch((error) => {
-      alert.value.showMessage(error.message, AlertType.ERROR);
+    .catch((error: unknown) => {
+      if (error instanceof Error) {
+        alert.value.showMessage(error.message, AlertType.ERROR);
+        return;
+      }
+      alert.value.showMessage("Unkown error.", AlertType.ERROR);
     });
 }
 </script>

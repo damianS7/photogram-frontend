@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
-import { computed, onMounted, ref } from "vue";
+import { ref } from "vue";
 import { authService } from "@/services/authService";
 import type { JsonResponse } from "@/types/JsonResponse";
-const router = useRouter();
 const route = useRoute();
 
-// const token = computed(() => {
-//   return route.params.token as string;
-// });
-
-// const token = ref(route.params.token);
 const token = ref<string>(String(route.params.token) || "");
 const message = ref({
   content: "",

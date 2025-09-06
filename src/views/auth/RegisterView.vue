@@ -4,7 +4,6 @@ import { z } from "zod";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-import type { Customer } from "@/types/Customer";
 import type { GenderType } from "@/types/Profile";
 import type { CustomerRegistration } from "@/types/CustomerRegistration";
 const authStore = useAuthStore();

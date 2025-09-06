@@ -7,7 +7,7 @@ import { authUtils } from "@/utils/auth";
 const { isCurrentUserOwner } = authUtils();
 
 // props
-const props = defineProps<{
+defineProps<{
   feed: Feed;
 }>();
 

@@ -1,75 +1,11 @@
 <script setup lang="ts">
-import { useCustomerStore } from "@/stores/customer";
 import Alert from "@/components/Alert.vue";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { Save } from "lucide-vue-next";
-import { AlertType } from "@/types/AlertType";
-import { useModalStore } from "@/stores/modal";
 
-// store
-const modalStore = useModalStore();
-const customerStore = useCustomerStore();
-
-// data
-const customer = customerStore.getLoggedCustomer;
-// message to show
 const alert = ref();
-const customerProfile = computed(() => customerStore.customer.profile);
-
-// updatable fields to be displayed
-const formFields = ref([
-  {
-    name: "firstName",
-    type: "text",
-    placeholder: "First name",
-    value: customerProfile.value?.firstName,
-    error: "",
-    isEditing: false,
-    edited: false,
-  },
-  {
-    name: "lastName",
-    type: "text",
-    placeholder: "Last name",
-    value: customerProfile.value?.lastName,
-    error: "",
-    isEditing: false,
-    edited: false,
-  },
-]);
 
 // functions
-// update a single field
-async function updateField(index: number, field: { name: string; value: string }) {
-  // wait for the user to input his password
-  const currentPassword = (await modalStore.open("ConfirmPasswordModal", {
-    title: "Confirm Password",
-  })) as string;
-
-  if (!currentPassword) {
-    // user cancelled the modal
-    return;
-  }
-
-  // nothing to update
-  if (field.value.length == 0 || currentPassword.length == 0) {
-    return;
-  }
-
-  // request for update
-  customerStore
-    .updateProfile(currentPassword, {
-      [field.name]: field.value,
-    })
-    .then((profile: any) => {
-      formFields.value[index].value = field.value;
-      alert.value.showMessage("Field successfully updated.", AlertType.SUCCESS);
-    })
-    .catch((error) => {
-      alert.value.showMessage(error.message, AlertType.ERROR);
-    });
-}
-
 function saveSettings() {
   //
 }
