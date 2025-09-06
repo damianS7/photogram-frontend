@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import { useCustomerStore } from "@/stores/customer";
-import { Bell, Settings, LogOut } from "lucide-vue-next";
+import { Settings, LogOut } from "lucide-vue-next";
 import ProfilePhoto from "@/components/ProfilePhoto.vue";
 import { useAuthStore } from "@/stores/auth";
+import NotificationButton from "./NotificationButton.vue";
+
+// store
 const customerStore = useCustomerStore();
 const authStore = useAuthStore();
+
+// functions
 function logout() {
   authStore.logout();
 }
 </script>
 <template>
-  <header class="flex items-center gap-2 w-full shadow p-2">
+  <header class="w-full shadow p-2">
     <div class="flex justify-between sm:max-w-2xl w-full gap-2 mx-auto">
       <div>
         <router-link class="logo" to="/"> Photogram </router-link>
@@ -31,7 +36,9 @@ function logout() {
             <ProfilePhoto class="rounded-full w-6 h-6 bg-gray-300" />
           </router-link>
         </span>
-        <Bell :size="26" />
+        <span>
+          <NotificationButton />
+        </span>
         <router-link to="/settings">
           <Settings :size="26" />
         </router-link>
