@@ -80,6 +80,7 @@ const routes: Array<RouteRecordRaw> = [
     path: "/auth",
     component: AuthLayout,
     redirect: "/auth/login",
+    meta: { redirectIfLogged: true },
     children: [
       {
         path: "login",
@@ -96,6 +97,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/accounts",
     component: AuthLayout,
+    meta: { redirectIfLogged: true },
     children: [
       {
         path: "activate/:token?",
@@ -161,7 +163,7 @@ router.beforeEach(async (to, _from, next) => {
   }
 
   // if you access to /auth being logged ...
-  if (to.path.includes("/auth") && isAuthenticated) {
+  if (to.meta.redirectIfLogged && isAuthenticated) {
     // redirects to /
     return next({
       path: "/",
