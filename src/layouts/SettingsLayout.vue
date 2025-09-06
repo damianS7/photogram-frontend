@@ -1,52 +1,11 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue";
-import { useAuthStore } from "@/stores/auth";
-import { useSettingStore } from "@/stores/setting";
+import { useAppInit } from "@/composables/useAppInit";
 import Sidebar from "@/views/settings/components/Sidebar.vue";
-import { useRouter } from "vue-router";
 import Header from "@/components/Header.vue";
-import { useCustomerStore } from "@/stores/customer";
-const authStore = useAuthStore();
-const customerStore = useCustomerStore();
-const settingStore = useSettingStore();
-const router = useRouter();
-const tokenValidationInterval = 30 * 1000; // 30s
-let interval: NodeJS.Timeout;
-let initialized = ref(false);
-
-async function checkIfTokenIsValid() {
-  const token = authStore.token;
-  await authStore.isTokenValid(token).catch(async () => {
-    initialized.value = false;
-    await authStore.logout();
-    await wait(100);
-    router.push("/auth/login");
-  });
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function wait(ms: number) {
-  await sleep(ms);
-}
-
-onMounted(async () => {
-  interval = setInterval(async () => {
-    await checkIfTokenIsValid();
-  }, tokenValidationInterval);
-
-  await customerStore.initialize();
-  await settingStore.initialize();
-  initialized.value = true;
-});
-onUnmounted(() => {
-  clearInterval(interval);
-});
+const appInit = useAppInit();
 </script>
 <template>
-  <main v-if="initialized" class="flex flex-col h-screen">
+  <main v-if="appInit.isInitialized()" class="flex flex-col h-screen">
     <Header />
     <div class="p-6 h-full overflow-hidden">
       <div

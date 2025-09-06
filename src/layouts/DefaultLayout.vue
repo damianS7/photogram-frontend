@@ -1,57 +1,10 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue";
-import { useAuthStore } from "@/stores/auth";
-import { useCustomerStore } from "@/stores/customer";
-import { useSettingStore } from "@/stores/setting";
-import { useRouter } from "vue-router";
+import { useAppInit } from "@/composables/useAppInit";
 import Header from "@/components/Header.vue";
-import { useSpinnerStore } from "@/stores/spinner";
-const screenSpinner = useSpinnerStore();
-const authStore = useAuthStore();
-const customerStore = useCustomerStore();
-const settingStore = useSettingStore();
-const router = useRouter();
-const tokenValidationInterval = 30 * 1000; // 30s
-let interval: NodeJS.Timeout;
-let initialized = ref(false);
-
-async function checkIfTokenIsValid() {
-  const token = authStore.token;
-  try {
-    await authStore.isTokenValid(token);
-  } catch {
-    initialized.value = false;
-    await authStore.logout();
-    await wait(100);
-    router.push("/auth/login");
-  }
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function wait(ms: number) {
-  await sleep(ms);
-}
-
-onMounted(async () => {
-  screenSpinner.show();
-  interval = setInterval(async () => {
-    await checkIfTokenIsValid();
-  }, tokenValidationInterval);
-
-  await customerStore.initialize();
-  await settingStore.initialize();
-  initialized.value = true;
-  screenSpinner.hide();
-});
-onUnmounted(() => {
-  clearInterval(interval);
-});
+const appInit = useAppInit();
 </script>
 <template>
-  <main v-if="initialized" class="flex flex-col">
+  <main v-if="appInit.isInitialized()" class="flex flex-col">
     <Header />
     <div class="p-6 h-full">
       <router-view />
