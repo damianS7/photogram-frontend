@@ -3,7 +3,7 @@ import { computed } from "vue";
 import { useNotificationStore } from "@/stores/notification";
 import { ref } from "vue";
 import { Bell } from "lucide-vue-next";
-import Notifications from "@/components/NotificationPanel.vue";
+import Notifications from "@/components/notification/NotificationPanel.vue";
 
 // stores
 const notificationStore = useNotificationStore();

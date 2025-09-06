@@ -3,7 +3,7 @@ import { useCustomerStore } from "@/stores/customer";
 import { Settings, LogOut } from "lucide-vue-next";
 import ProfilePhoto from "@/components/ProfilePhoto.vue";
 import { useAuthStore } from "@/stores/auth";
-import NotificationButton from "./NotificationButton.vue";
+import NotificationButton from "./notification/NotificationButton.vue";
 
 // store
 const customerStore = useCustomerStore();
