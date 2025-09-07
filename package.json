@@ -11,6 +11,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "event-source-polyfill": "^1.0.31",
     "jwt-decode": "^4.0.0",
     "lucide-vue-next": "^0.525.0",
     "pinia": "^3.0.2",
