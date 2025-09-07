@@ -1,3 +1,25 @@
-# Paynext
+# Photogram
 
-Simple app to calculate debts between friends
+Simple clone of Instagram.
+
+## Project setup
+
+```
+npm install
+```
+
+### Compiles and hot-reloads for development
+
+```
+npm run dev
+```
+
+### Compiles and minifies for production
+
+```
+npm run build
+```
+
+### Customize configuration
+
+See [Configuration Reference](https://cli.vuejs.org/config/).
