@@ -24,19 +24,22 @@ onUnmounted(() => {
 });
 </script>
 <template>
-  <span @click.stop class="relative">
+  <span @click.stop>
     <span
       class="flex items-center p-1"
       :class="[showNotifications ? 'bg-gray-300 rounded-full' : '']"
     >
-      <button @click="toggleNotifications">
+      <button class="relative" @click="toggleNotifications">
         <Bell :size="26" />
         <span
-          class="bg-red-600 rounded-full right-1 bottom-1 text-white absolute text-[0.5rem] w-3 h-3"
-          >{{ unreadNotifications }}</span
+          class="absolute -top-1 -right-1 flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-red-600 text-white text-[10px] leading-none font-semibold shadow-sm pointer-events-none"
         >
+          {{ unreadNotifications }}
+        </span>
       </button>
     </span>
-    <Notifications v-if="showNotifications" />
+    <span class="relative">
+      <Notifications v-if="showNotifications" />
+    </span>
   </span>
 </template>

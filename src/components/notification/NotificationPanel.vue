@@ -9,7 +9,7 @@ const { notifications } = storeToRefs(notificationStore);
 </script>
 <template>
   <div
-    class="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-gray-100 border border-gray-300 w-80 rounded-md shadow-md z-50 overflow-hidden"
+    class="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-gray-100 border border-gray-300 w-80 rounded-md shadow-md z-50 overflow-hidden"
   >
     <div class="overflow-x-hidden h-40 w-full rounded-md space-y-1 p-3">
       <slot v-for="notification in notifications">
