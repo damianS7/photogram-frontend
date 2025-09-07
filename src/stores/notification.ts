@@ -2,87 +2,46 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import type { Notification } from "@/types/Notification";
+import { EventSourcePolyfill } from "event-source-polyfill";
+import { notificationService } from "@/services/notificationService";
+const API = import.meta.env.VITE_APP_API_URL;
 
 export const useNotificationStore = defineStore("notification", () => {
   const notifications = ref<Notification[]>([]);
 
   // fetch the feed data for the given username
-  async function fetchNotifications(): Promise<Notification[]> {
-    // const eventSource = new EventSource("http://localhost:8080/notifications/stream");
-    // eventSource.onmessage = (event) => {
-    //   console.log("🔔 Notificación:", event.data);
-    //   // aquí actualizas tu store o muestras un toast
-    // };
-
-    // eventSource.onerror = (err) => {
-    //   console.error("SSE error:", err);
-    // };
-    notifications.value = [
-      {
-        id: 1,
-        postId: 101,
-        content: "New comment on your post!",
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: 2,
-        postId: 102,
-        content: "Your post got a new like!",
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: 3,
-        postId: 103,
-        content: "You have a new follower!",
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: 3,
-        postId: 103,
-        content: "You have a new follower!",
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: 3,
-        postId: 103,
-        content: "You have a new follower!",
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: 3,
-        postId: 103,
-        content: "You have a new follower sdfsdfsdf sdfsdfsdf sfsdfsdf!",
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: 3,
-        postId: 103,
-        content: "You have a new followerfollowerfollowerfollowerfollowerfollower!",
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: 3,
-        postId: 103,
-        content: "You have a new follower!",
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: 3,
-        postId: 103,
-        content: "You have a new follower!",
-        createdAt: new Date().toISOString(),
-      },
-    ];
-
+  async function getNotifications(): Promise<Notification[]> {
     return notifications.value;
   }
 
   async function initialize() {
-    await fetchNotifications();
+    notifications.value = [];
+    const eventSource = new EventSourcePolyfill(`${API}/notifications/stream`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    eventSource.onmessage = (event: MessageEvent) => {
+      // console.log("🔔 Notification received:", event.data);
+      try {
+        const notification: Notification = JSON.parse(event.data);
+        if (typeof notification.message === "string") {
+          // notifications.value.push(notification);
+          notifications.value.unshift(notification);
+        }
+      } catch (error) {}
+    };
+
+    notificationService.fetchNotifications().then((fetchedNotifications) => {
+      notifications.value = fetchedNotifications.content;
+    });
   }
 
   async function clearNotifications() {
-    notifications.value = [];
+    notificationService.deleteNotifications().then(() => {
+      notifications.value = [];
+    });
   }
 
   async function refreshNotifications(): Promise<Notification[] | undefined> {
@@ -92,7 +51,7 @@ export const useNotificationStore = defineStore("notification", () => {
   return {
     initialize,
     notifications,
-    fetchNotifications,
+    getNotifications,
     refreshNotifications,
     clearNotifications,
   };
