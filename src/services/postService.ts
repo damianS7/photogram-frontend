@@ -1,3 +1,4 @@
+import type { JsonResponse } from "@/types/JsonResponse";
 import type { PaginatedResponse } from "@/types/PaginatedResponse";
 import type { Post } from "@/types/Post";
 
@@ -26,6 +27,20 @@ export const postService = {
   },
   async getPhoto(filename: string): Promise<Blob> {
     const response = await fetch(`${API}/posts/photo/${filename}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error("Failed to get photo.");
+    }
+
+    return await response.blob();
+  },
+  async getPostPhoto(postId: number): Promise<Blob> {
+    const response = await fetch(`${API}/posts/${postId}/photo`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -77,7 +92,8 @@ export const postService = {
     });
 
     if (response.status !== 201) {
-      throw new Error("Failed to upload photo.");
+      const r = (await response.json()) as JsonResponse;
+      throw new Error(r.message || "Failed to upload photo.");
     }
 
     const json = await response.json();

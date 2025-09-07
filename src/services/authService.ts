@@ -64,7 +64,7 @@ export const authService = {
     return (await response.json()) as JsonResponse;
   },
   async resendAccountActivation(email: string): Promise<JsonResponse> {
-    const response = await fetch(`${API}/accounts/resend-activation`, {
+    const response = await fetch(`${API}/accounts/resend-verification`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -96,7 +96,7 @@ export const authService = {
 
     return (await response.json()) as JsonResponse;
   },
-  async resetPasswordSet(password:string, token: string): Promise<JsonResponse> {
+  async resetPasswordSet(password: string, token: string): Promise<JsonResponse> {
     const response = await fetch(`${API}/accounts/reset-password/${token}`, {
       method: "POST",
       headers: {

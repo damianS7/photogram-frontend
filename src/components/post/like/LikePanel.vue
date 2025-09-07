@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted } from "vue";
 import { Heart } from "lucide-vue-next";
 import { useLikeStore } from "@/stores/like";
 

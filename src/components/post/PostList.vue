@@ -4,7 +4,7 @@ import type { Post } from "@/types/Post";
 import { ImageOff } from "lucide-vue-next";
 
 // props
-const props = defineProps<{
+defineProps<{
   posts: Post[];
 }>();
 
