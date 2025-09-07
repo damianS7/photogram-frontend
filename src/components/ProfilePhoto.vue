@@ -27,6 +27,10 @@ function reloadProfileImg() {
 }
 </script>
 <template>
-  <img v-if="profileImgURL" :src="profileImgURL" />
+  <img
+    v-if="profileImgURL"
+    :src="profileImgURL"
+    @error="(e: any) => (e.target.src = '/public/default-avatar.png')"
+  />
   <div v-else class="bg-gray-300"></div>
 </template>

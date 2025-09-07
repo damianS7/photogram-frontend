@@ -33,6 +33,7 @@ async function showFollowing() {
     <div class="">
       <img
         :src="feed.profileImageFilename"
+        @error="(e: any) => (e.target.src = '/public/default-avatar.png')"
         alt="Profile photo"
         class="rounded-full object-cover h-24 w-24 bg-gray-300"
       />
