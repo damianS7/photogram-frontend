@@ -2,24 +2,26 @@
 import { useRoute } from "vue-router";
 import { ref } from "vue";
 import { authService } from "@/services/authService";
-import type { JsonResponse } from "@/types/JsonResponse";
+import type { ApiResponse } from "@/types/ApiResponse";
+import { AlertType } from "@/types/AlertType";
+import Alert from "@/components/Alert.vue";
+
 const route = useRoute();
+const alert = ref();
 
 const token = ref<string>(String(route.params.token) || "");
-const message = ref({
-  content: "",
-  isError: false,
-});
 
 async function activateAccount() {
-  message.value.content = "";
-  message.value.isError = false;
+  if (token.value.trim().length <= 0) {
+    alert.value.showMessage("Token cannot be empty.", AlertType.ERROR);
+    return;
+  }
+
   try {
-    const response: JsonResponse = await authService.activateAccount(token.value);
-    message.value.content = response.message;
+    const response: ApiResponse = await authService.activateAccount(token.value);
+    alert.value.showMessage(response.message, AlertType.SUCCESS);
   } catch (error: any) {
-    message.value.content = error.message;
-    message.value.isError = true;
+    alert.value.handleException(error);
   }
 }
 </script>
@@ -31,12 +33,9 @@ async function activateAccount() {
       class="bg-white p-4 rounded-lg shadow-md"
       placeholder="Insert your token"
     />
-    <span
-      v-if="message.content"
-      class="text-sm ml-4"
-      :class="message.isError ? 'text-red-500' : ''"
-      >{{ message.content }}</span
-    >
+    <div class="p-1 w-full">
+      <Alert ref="alert" />
+    </div>
     <span class="text-sm text-center"
       >I don't have a token.
       <RouterLink to="/accounts/resend-activation" class="hover:underline text-blue-600">
