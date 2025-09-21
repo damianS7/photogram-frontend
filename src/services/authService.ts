@@ -1,5 +1,6 @@
+import { ApiError } from "@/types/ApiError";
+import type { ApiResponse } from "@/types/ApiResponse";
 import type { CustomerRegistration } from "@/types/CustomerRegistration";
-import type { JsonResponse } from "@/types/JsonResponse";
 const API = import.meta.env.VITE_APP_API_URL;
 
 export const authService = {
@@ -10,13 +11,13 @@ export const authService = {
       body: JSON.stringify({ email, password }),
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Login failed.");
+    const json = await response.json();
+
+    if (response.status !== 200) {
+      throw new ApiError(json.message || "Failed to login.", response.status, json.errors);
     }
 
-    const data = await response.json();
-    return data.token;
+    return json.token;
   },
 
   async register(fields: CustomerRegistration) {
@@ -26,12 +27,13 @@ export const authService = {
       body: JSON.stringify(fields),
     });
 
+    const json = await response.json();
+
     if (response.status !== 201) {
-      const error = await response.json();
-      throw new Error(error.message || "Registration failed.");
+      throw new ApiError(json.message || "Registration failed.", response.status, json.errors);
     }
 
-    return await response.json();
+    return json;
   },
 
   async validateToken(token: string): Promise<boolean> {
@@ -43,13 +45,14 @@ export const authService = {
       },
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Token validation failed.");
+    if (response.status !== 200) {
+      const json = await response.json();
+      throw new ApiError(json.message || "Token validation failed.", response.status, json.errors);
     }
+
     return true;
   },
-  async activateAccount(token: string): Promise<JsonResponse> {
+  async activateAccount(token: string): Promise<ApiResponse> {
     const response = await fetch(`${API}/accounts/activate/${token}`, {
       method: "GET",
       headers: {
@@ -57,13 +60,16 @@ export const authService = {
       },
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Token validation failed.");
+    const json = await response.json();
+
+    if (response.status !== 200) {
+      throw new ApiError(json.message || "Cannot activate account.", response.status, json.errors);
     }
-    return (await response.json()) as JsonResponse;
+
+    return json;
+    // return (await response.json()) as ApiResponse;
   },
-  async resendAccountActivation(email: string): Promise<JsonResponse> {
+  async resendAccountActivation(email: string): Promise<ApiResponse> {
     const response = await fetch(`${API}/accounts/resend-verification`, {
       method: "POST",
       headers: {
@@ -72,15 +78,21 @@ export const authService = {
       body: JSON.stringify({ email }),
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to send activation email.");
+    const json = await response.json();
+
+    if (response.status !== 200) {
+      throw new ApiError(
+        json.message || "Failed to send activation email.",
+        response.status,
+        json.errors
+      );
     }
 
-    return (await response.json()) as JsonResponse;
+    return json;
+    // return (await response.json()) as ApiResponse;
   },
 
-  async resetPasswordRequest(email: string): Promise<JsonResponse> {
+  async resetPasswordRequest(email: string): Promise<ApiResponse> {
     const response = await fetch(`${API}/accounts/reset-password`, {
       method: "POST",
       headers: {
@@ -89,14 +101,21 @@ export const authService = {
       body: JSON.stringify({ email }),
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to send reset password email.");
+    const json = await response.json();
+
+    if (response.status !== 200) {
+      throw new ApiError(
+        json.message || "Failed to send reset password email.",
+        response.status,
+        json.errors
+      );
     }
 
-    return (await response.json()) as JsonResponse;
+    return json;
+
+    // return (await response.json()) as ApiResponse;
   },
-  async resetPasswordSet(password: string, token: string): Promise<JsonResponse> {
+  async resetPasswordSet(password: string, token: string): Promise<ApiResponse> {
     const response = await fetch(`${API}/accounts/reset-password/${token}`, {
       method: "POST",
       headers: {
@@ -105,10 +124,14 @@ export const authService = {
       body: JSON.stringify({ password }),
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to reset password.");
+    const json = await response.json();
+
+    if (response.status !== 200) {
+      throw new ApiError(json.message || "Failed reset password.", response.status, json.errors);
     }
-    return (await response.json()) as JsonResponse;
+
+    return json;
+
+    // return (await response.json()) as ApiResponse;
   },
 };
