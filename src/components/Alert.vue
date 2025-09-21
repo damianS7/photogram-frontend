@@ -10,20 +10,31 @@ const alert = ref({
   type: AlertType.ERROR,
   timeout: 10,
   visible: false,
+  autoClose: false,
 });
 
 function show(message: string, type: AlertType, timeout?: number) {
   alert.value.type = type;
-  alert.value.timeout = timeout ?? alert.value.timeout;
   alert.value.message = message;
   alert.value.visible = true;
-  setTimeout(() => {
-    alert.value.visible = false;
 
+  // if timeout is set
+  if (timeout && timeout > 1) {
+    alert.value.timeout = timeout;
+    alert.value.autoClose = true;
+  } else {
+    alert.value.autoClose = false;
+  }
+
+  if (alert.value.autoClose) {
     setTimeout(() => {
-      hideAlert();
-    }, 500);
-  }, alert.value.timeout * 1000);
+      alert.value.visible = false;
+
+      setTimeout(() => {
+        hideAlert();
+      }, 500);
+    }, alert.value.timeout * 1000);
+  }
 }
 
 function showMessage(message: string, type: AlertType, timeout?: number) {
@@ -67,9 +78,9 @@ defineExpose({ showMessage, showException, handleException });
     <span class="block sm:inline ml-2">
       <p>{{ alert.message }}</p>
       <ul v-if="alert.errors" class="list-disc ml-8">
-        <li v-for="(error, field) in alert.errors" :key="field">
-          <b>{{ field }}</b
-          >: {{ error }}
+        <li v-for="(errors, field) in alert.errors" :key="field">
+          <b>{{ field }}</b>
+          <p v-for="(error, field) in errors" :key="field">{{ error }}</p>
         </li>
       </ul>
     </span>
