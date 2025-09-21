@@ -2,16 +2,40 @@
 import { useNotificationStore } from "@/stores/notification";
 import { storeToRefs } from "pinia";
 import { Heart, Users, MessageCircleCode } from "lucide-vue-next";
+import { useScrollBottonDetect } from "@/composables/useScrollBottomDetect";
+import { ref, useTemplateRef } from "vue";
+
 // const { isCurrentUserOwner } = authUtils();
 // stores
 const notificationStore = useNotificationStore();
+
+// data
+const page = ref(0);
 const { notifications } = storeToRefs(notificationStore);
+const notificationListRef = useTemplateRef("notificationListRef");
+useScrollBottonDetect(notificationListRef, doOnBottom);
+
+// functions
+async function doOnBottom() {
+  if (
+    notificationStore.pagination?.totalPages &&
+    page.value >= notificationStore.pagination?.totalPages - 1
+  ) {
+    return;
+  }
+
+  // next page
+  page.value += 1;
+
+  // fetch following for the next page
+  await notificationStore.fetchNotifications(page.value);
+}
 </script>
 <template>
   <div
     class="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-gray-100 border border-gray-300 w-80 rounded-md shadow-md z-50 overflow-hidden"
   >
-    <div class="overflow-x-hidden h-40 w-full rounded-md space-y-1 p-3">
+    <div ref="notificationListRef" class="overflow-x-hidden h-40 w-full rounded-md space-y-1 p-3">
       <slot v-for="notification in notifications">
         <p class="w-full text-sm truncate bg-gray-200 hover:bg-gray-300 p-1 rounded">
           <slot v-if="notification.type === 'LIKE'">
