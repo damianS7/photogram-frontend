@@ -4,6 +4,7 @@ import FollowButton from "@/components/follow/FollowButton.vue";
 import type { Feed } from "@/types/Feed";
 import { useModalStore } from "@/stores/modal";
 import { authUtils } from "@/utils/auth";
+import { Send } from "lucide-vue-next";
 const { isCurrentUserOwner } = authUtils();
 
 // props
@@ -45,7 +46,10 @@ async function showFollowing() {
         <b class="uppercase">@{{ feed.username }}</b>
         <div v-if="!isCurrentUserOwner(feed.customerId)" class="flex items-center gap-2">
           <FollowButton :customer-id="feed.customerId" />
-          <button class="btn btn-sm btn-primary">Send message</button>
+          <button class="btn btn-sm btn-primary flex items-center gap-2">
+            <Send :size="18" />
+            Send message
+          </button>
         </div>
       </div>
       <div class="flex items-center gap-2 text-gray-600">
