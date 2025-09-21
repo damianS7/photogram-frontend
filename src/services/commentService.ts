@@ -1,4 +1,5 @@
 // services/commentService.ts
+import { ApiError } from "@/types/ApiError";
 import type { Comment } from "@/types/Comment";
 import type { PaginatedResponse } from "@/types/PaginatedResponse";
 
@@ -21,12 +22,18 @@ export const commentService = {
       }
     );
 
+    // json response
+    const json = await response.json();
+
     if (response.status !== 200) {
-      const json = await response.json();
-      throw new Error("Failed to fetch comments. " + json.message);
+      throw new ApiError(
+        json.message || "Failed to fetch comments from post.",
+        response.status,
+        json.errors
+      );
     }
 
-    return await response.json();
+    return json;
   },
 
   async postComment(postId: number, comment: string): Promise<Comment> {
@@ -36,11 +43,18 @@ export const commentService = {
       body: JSON.stringify({ postId, comment }),
     });
 
+    // json response
+    const json = await response.json();
+
     if (response.status !== 201) {
-      throw new Error("Failed to create a comment.");
+      throw new ApiError(
+        json.message || "Failed to comment in post.",
+        response.status,
+        json.errors
+      );
     }
 
-    return await response.json();
+    return json;
   },
 
   async deleteComment(commentId: number) {
@@ -50,7 +64,12 @@ export const commentService = {
     });
 
     if (response.status !== 204) {
-      throw new Error("Failed to delete comment.");
+      const json = await response.json();
+      throw new ApiError(
+        json.message || "Failed to delete comment from post.",
+        response.status,
+        json.errors
+      );
     }
   },
 };

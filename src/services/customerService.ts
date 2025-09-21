@@ -1,4 +1,5 @@
 // services/customerService.ts
+import { ApiError } from "@/types/ApiError";
 import type { Customer } from "@/types/Customer";
 import type { Profile } from "@/types/Profile";
 
@@ -18,12 +19,13 @@ export const customerService = {
       headers: authHeader(),
     });
 
+    const json = await response.json();
+
     if (response.status !== 200) {
-      const json = await response.json();
-      throw new Error(json.message || "Failed to fetch customer.");
+      throw new ApiError(json.message || "Failed to fetch customer.", response.status, json.errors);
     }
 
-    return await response.json();
+    return json;
   },
 
   async patchProfile(
@@ -36,11 +38,13 @@ export const customerService = {
       body: JSON.stringify({ currentPassword, fieldsToUpdate }),
     });
 
+    const json = await response.json();
+
     if (response.status !== 200) {
-      throw new Error("Failed to update profile.");
+      throw new ApiError(json.message || "Failed to update profile.", response.status, json.errors);
     }
 
-    return await response.json();
+    return json;
   },
 
   async patchEmail(currentPassword: string, newEmail: string): Promise<Customer> {
@@ -50,11 +54,13 @@ export const customerService = {
       body: JSON.stringify({ currentPassword, newEmail }),
     });
 
+    const json = await response.json();
+
     if (response.status !== 200) {
-      throw new Error("Failed to update email.");
+      throw new ApiError(json.message || "Failed to update email.", response.status, json.errors);
     }
 
-    return await response.json();
+    return json;
   },
 
   async changePassword(currentPassword: string, newPassword: string) {
@@ -65,12 +71,17 @@ export const customerService = {
     });
 
     if (response.status !== 200) {
-      throw new Error("Failed to change password.");
+      const json = await response.json();
+      throw new ApiError(
+        json.message || "Failed to update password.",
+        response.status,
+        json.errors
+      );
     }
   },
 
-  async getPhoto(customerId: number): Promise<Blob> {
-    const response = await fetch(`${API}/customers/${customerId}/profile/photo`, {
+  async getProfileImage(customerId: number): Promise<Blob> {
+    const response = await fetch(`${API}/customers/${customerId}/profile/image`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -78,18 +89,23 @@ export const customerService = {
     });
 
     if (response.status !== 200) {
-      throw new Error("Failed to get photo.");
+      const json = await response.json();
+      throw new ApiError(
+        json.message || "Failed to fetch profile image.",
+        response.status,
+        json.errors
+      );
     }
 
     return await response.blob();
   },
 
-  async uploadPhoto(currentPassword: string, file: File): Promise<Blob> {
+  async uploadProfileImage(currentPassword: string, file: File): Promise<Blob> {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("currentPassword", currentPassword);
 
-    const response = await fetch(`${API}/customers/profile/photo`, {
+    const response = await fetch(`${API}/customers/profile/image`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -98,7 +114,8 @@ export const customerService = {
     });
 
     if (response.status !== 201) {
-      throw new Error("Failed to upload photo.");
+      const json = await response.json();
+      throw new ApiError(json.message || "Failed to upload image.", response.status, json.errors);
     }
 
     return await response.blob();
