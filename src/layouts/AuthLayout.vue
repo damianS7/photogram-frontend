@@ -12,29 +12,29 @@ const route = useRoute();
     </div>
     <div class="mt-6 text-center text-sm text-gray-600 space-y-1">
       <RouterLink
-        v-if="!route.path.includes('/auth/login')"
-        to="/auth/login"
+        v-if="route.name !== 'login'"
+        :to="{ name: 'login' }"
         class="block hover:underline text-blue-600"
       >
         Sign in
       </RouterLink>
       <RouterLink
-        v-if="!route.path.includes('/auth/register')"
-        to="/auth/register"
+        v-if="route.name !== 'register'"
+        :to="{ name: 'register' }"
         class="block hover:underline text-blue-600"
       >
         ¿Dont you have an account? Sign up
       </RouterLink>
       <RouterLink
-        v-if="!route.path.includes('/accounts/reset-password')"
-        to="/accounts/reset-password"
+        v-if="route.name !== 'reset-password'"
+        :to="{ name: 'reset-password' }"
         class="block hover:underline text-blue-600"
       >
         ¿Forgot your password?
       </RouterLink>
       <RouterLink
-        v-if="!route.path.includes('/accounts/activate')"
-        to="/accounts/activate"
+        v-if="route.name !== 'verify-account'"
+        :to="{ name: 'verify-account' }"
         class="block hover:underline text-blue-600"
       >
         Activate account
