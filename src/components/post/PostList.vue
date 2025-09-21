@@ -26,8 +26,8 @@ async function showPost(post: Post) {
     >
       <div v-for="post in posts" :key="post.id" @click="showPost(post)" class="flex w-full h-72">
         <img
-          v-if="post.photoFilename"
-          :src="post.photoFilename"
+          v-if="post.imageFilename"
+          :src="post.imageFilename"
           alt="Post Image"
           class="object-cover w-full h-full"
         />

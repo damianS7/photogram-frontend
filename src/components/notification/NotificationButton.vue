@@ -8,7 +8,7 @@ import Notifications from "@/components/notification/NotificationPanel.vue";
 // stores
 const notificationStore = useNotificationStore();
 const showNotifications = ref(false);
-const unreadNotifications = computed(() => notificationStore.notifications.length);
+const unreadNotifications = computed(() => notificationStore.countNotifications());
 
 // functions
 function toggleNotifications() {

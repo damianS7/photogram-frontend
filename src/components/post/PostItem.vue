@@ -26,7 +26,7 @@ const feedStore = useFeedStore();
 const postStore = usePostStore();
 
 // data
-const imagePreview = ref<string | null>(props.post.photoFilename);
+const imagePreview = ref<string | null>(props.post.imageFilename);
 const comment = ref("");
 const commentTextareaRef = ref<HTMLDivElement | null>(null);
 const alert = ref();

@@ -53,7 +53,7 @@ onMounted(async () => {
           class="flex flex-col border-2 border-dashed py-1 px-2 rounded bg-gray-100"
         >
           <span class="py-2 text-sm">
-            {{ comment.content }}
+            {{ comment.message }}
           </span>
           <span class="flex justify-between items-center text-xs text-gray-500">
             <strong>{{ comment.username }}</strong>
