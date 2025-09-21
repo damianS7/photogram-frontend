@@ -8,8 +8,7 @@ import Alert from "@/components/Alert.vue";
 
 const route = useRoute();
 const alert = ref();
-
-const token = ref<string>(String(route.params.token) || "");
+const token = ref<string>((route.params.token as string | undefined) ?? "");
 
 async function activateAccount() {
   if (token.value.trim().length <= 0) {
