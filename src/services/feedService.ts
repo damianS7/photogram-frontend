@@ -1,4 +1,5 @@
 // services/customerService.ts
+import { ApiError } from "@/types/ApiError";
 import type { Feed } from "@/types/Feed";
 
 const API = import.meta.env.VITE_APP_API_URL;
@@ -17,11 +18,13 @@ export const feedService = {
       headers: authHeader(),
     });
 
+    // json response
+    const json = await response.json();
+
     if (response.status !== 200) {
-      const json = await response.json();
-      throw new Error("Failed to fetch feed. " + json.message);
+      throw new ApiError(json.message || "Failed to fetch feed.", response.status, json.errors);
     }
 
-    return await response.json();
+    return json;
   },
 };

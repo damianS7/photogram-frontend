@@ -7,7 +7,6 @@ import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { usePostStore } from "@/stores/post";
 import { useModalStore } from "@/stores/modal";
 import { useFeedStore } from "@/stores/feed";
-import { customerService } from "@/services/customerService";
 import { authUtils } from "@/utils/auth";
 const { isCurrentUserOwner } = authUtils();
 
@@ -25,7 +24,6 @@ const postStore = usePostStore();
 // data
 const page = ref(0);
 const loading = ref(true);
-const usernameExist = ref(false);
 const route = useRoute();
 const feed = computed(() => {
   return feedStore.feed;
@@ -52,14 +50,12 @@ async function createPost() {
 
 async function loadFeed() {
   loading.value = true;
-  usernameExist.value = await customerService.usernameExists(username.value);
-  if (!usernameExist.value) {
-    loading.value = false;
-    return;
-  }
 
-  await feedStore.fetchFeed(username.value);
-  await postStore.fetchPosts(username.value);
+  try {
+    await feedStore.fetchFeed(username.value);
+    await postStore.fetchPosts(username.value);
+  } catch (exception: unknown) {}
+
   loading.value = false;
 }
 
@@ -89,7 +85,7 @@ onUnmounted(() => {
 });
 </script>
 <template>
-  <div v-if="usernameExist && !loading && feed">
+  <div v-if="!loading && feed">
     <FeedHeader v-if="feed" :feed="feed" />
     <div v-if="isCurrentUserOwner(feed.customerId)" class="text-center">
       <button class="bg-blue-600 py-2 px-4 text-white font-bold rounded-full" @click="createPost">
@@ -98,5 +94,5 @@ onUnmounted(() => {
     </div>
     <PostList :posts="posts" />
   </div>
-  <div v-if="!usernameExist && !loading" class="flex w-full justify-center">Username not found</div>
+  <div v-if="!feed && !loading" class="flex w-full justify-center">Username not found</div>
 </template>
