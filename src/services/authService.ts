@@ -53,7 +53,7 @@ export const authService = {
     return true;
   },
   async activateAccount(token: string): Promise<ApiResponse> {
-    const response = await fetch(`${API}/accounts/activate/${token}`, {
+    const response = await fetch(`${API}/accounts/verification/${token}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
