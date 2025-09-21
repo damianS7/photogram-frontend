@@ -27,7 +27,7 @@ export const useCustomerStore = defineStore("customer", {
       }
 
       try {
-        const photo = await customerService.getPhoto(customer.id);
+        const photo = await customerService.getProfileImage(customer.id);
         localStorage.setItem("profilePhotoURL", URL.createObjectURL(photo));
       } catch (error) {
         localStorage.setItem("profilePhotoURL", "/public/default-avatar.png");
@@ -51,7 +51,7 @@ export const useCustomerStore = defineStore("customer", {
     },
 
     async uploadPhoto(currentPassword: string, file: File) {
-      const blob = await customerService.uploadPhoto(currentPassword, file);
+      const blob = await customerService.uploadProfileImage(currentPassword, file);
       localStorage.setItem("profilePhotoURL", URL.createObjectURL(blob));
       return blob;
     },

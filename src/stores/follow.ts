@@ -28,7 +28,7 @@ export const useFollowStore = defineStore("follow", () => {
     for (const follower of followers.value) {
       // fetch the photo
       try {
-        const resource = await customerService.getPhoto(follower.followerCustomerId);
+        const resource = await customerService.getProfileImage(follower.followerCustomerId);
         follower.followerCustomerProfileImageFilename = URL.createObjectURL(resource);
       } catch (error) {
         follower.followerCustomerProfileImageFilename = "/public/default-avatar.png";
@@ -53,7 +53,7 @@ export const useFollowStore = defineStore("follow", () => {
     for (const followed of following.value) {
       // fetch the photo
       try {
-        const resource = await customerService.getPhoto(followed.followedCustomerId);
+        const resource = await customerService.getProfileImage(followed.followedCustomerId);
         followed.followedCustomerProfileImageFilename = URL.createObjectURL(resource);
       } catch (error) {
         followed.followedCustomerProfileImageFilename = "/public/default-avatar.png";

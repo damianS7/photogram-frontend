@@ -13,7 +13,7 @@ export const usePostStore = defineStore("post", () => {
     const pPosts = (await postService.getPosts(username, page)) as PaginatedResponse;
     for (const post of pPosts.content as Post[]) {
       try {
-        const resource = await postService.getPostPhoto(post.id);
+        const resource = await postService.getPostImage(post.id);
         post.imageFilename = URL.createObjectURL(resource);
       } catch (error) {
         post.imageFilename = null;
@@ -31,7 +31,7 @@ export const usePostStore = defineStore("post", () => {
 
   async function createPost(filename: string, description: string) {
     const post = (await postService.createPost(filename, description)) as Post;
-    const resource = await postService.getPostPhoto(post.id);
+    const resource = await postService.getPostImage(post.id);
     post.imageFilename = URL.createObjectURL(resource);
     posts.value.unshift(post);
     return post;
