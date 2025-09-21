@@ -100,8 +100,8 @@ const routes: Array<RouteRecordRaw> = [
     meta: { redirectIfLogged: true },
     children: [
       {
-        path: "activate/:token?",
-        name: "activate-account",
+        path: "verification/:token?",
+        name: "verify-account",
         component: ActivateView,
       },
       {
