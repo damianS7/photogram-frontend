@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { AlertType } from "@/types/AlertType";
-import { FieldException } from "@/types/FieldException";
+import { ApiError } from "@/types/ApiError";
+
 // alert properties
 const alert = ref({
   message: "",
@@ -30,9 +31,18 @@ function showMessage(message: string, type: AlertType, timeout?: number) {
   show(message, type, timeout);
 }
 
-function showException(exception: FieldException, timeout?: number) {
-  alert.value.errors = exception.errors;
+function showException(exception: ApiError, timeout?: number) {
+  alert.value.errors = exception.errors || {};
   show(exception.message, AlertType.ERROR, timeout);
+}
+
+function handleException(exception: unknown, timeout?: number) {
+  if (exception instanceof ApiError) {
+    show(exception.message, AlertType.ERROR, timeout);
+    alert.value.errors = exception.errors || {};
+  } else {
+    show("Unkown error", AlertType.ERROR, timeout);
+  }
 }
 
 function hideAlert() {
@@ -40,7 +50,7 @@ function hideAlert() {
   alert.value.errors = {};
 }
 
-defineExpose({ showMessage, showException });
+defineExpose({ showMessage, showException, handleException });
 </script>
 <template>
   <div

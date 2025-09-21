@@ -14,9 +14,9 @@ export const usePostStore = defineStore("post", () => {
     for (const post of pPosts.content as Post[]) {
       try {
         const resource = await postService.getPostPhoto(post.id);
-        post.photoFilename = URL.createObjectURL(resource);
+        post.imageFilename = URL.createObjectURL(resource);
       } catch (error) {
-        post.photoFilename = null;
+        post.imageFilename = null;
       }
     }
 
@@ -32,7 +32,7 @@ export const usePostStore = defineStore("post", () => {
   async function createPost(filename: string, description: string) {
     const post = (await postService.createPost(filename, description)) as Post;
     const resource = await postService.getPostPhoto(post.id);
-    post.photoFilename = URL.createObjectURL(resource);
+    post.imageFilename = URL.createObjectURL(resource);
     posts.value.unshift(post);
     return post;
   }
@@ -46,15 +46,15 @@ export const usePostStore = defineStore("post", () => {
   }
 
   // upload the photo and returns filename
-  async function uploadPhoto(file: File): Promise<string> {
-    return await postService.uploadPhoto(file);
+  async function uploadPostImage(file: File): Promise<string> {
+    return await postService.uploadPostImage(file);
   }
 
   return {
     pagination,
     fetchPosts,
     posts,
-    uploadPhoto,
+    uploadPostImage,
     createPost,
     deletePost,
   };

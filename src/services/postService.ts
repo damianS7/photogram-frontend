@@ -1,4 +1,5 @@
-import type { JsonResponse } from "@/types/JsonResponse";
+import { ApiError } from "@/types/ApiError";
+import type { ApiResponse } from "@/types/ApiResponse";
 import type { PaginatedResponse } from "@/types/PaginatedResponse";
 import type { Post } from "@/types/Post";
 
@@ -26,7 +27,7 @@ export const postService = {
     return await response.json();
   },
   async getPhoto(filename: string): Promise<Blob> {
-    const response = await fetch(`${API}/posts/photo/${filename}`, {
+    const response = await fetch(`${API}/posts/image/${filename}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -34,13 +35,13 @@ export const postService = {
     });
 
     if (response.status !== 200) {
-      throw new Error("Failed to get photo.");
+      throw new Error("Failed to get image.");
     }
 
     return await response.blob();
   },
   async getPostPhoto(postId: number): Promise<Blob> {
-    const response = await fetch(`${API}/posts/${postId}/photo`, {
+    const response = await fetch(`${API}/posts/${postId}/image`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -48,17 +49,17 @@ export const postService = {
     });
 
     if (response.status !== 200) {
-      throw new Error("Failed to get photo.");
+      throw new Error("Failed to get image.");
     }
 
     return await response.blob();
   },
 
-  async createPost(photoFilename: string, description: string): Promise<Post> {
+  async createPost(imageFilename: string, description: string): Promise<Post> {
     const response = await fetch(`${API}/posts`, {
       method: "POST",
       headers: authHeader(),
-      body: JSON.stringify({ photoFilename, description }),
+      body: JSON.stringify({ imageFilename, description }),
     });
 
     if (response.status !== 201) {
@@ -79,11 +80,11 @@ export const postService = {
     }
   },
 
-  async uploadPhoto(file: File): Promise<string> {
+  async uploadPostImage(file: File): Promise<string> {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch(`${API}/posts/photo`, {
+    const response = await fetch(`${API}/posts/image`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -91,13 +92,13 @@ export const postService = {
       body: formData,
     });
 
-    if (response.status !== 201) {
-      const r = (await response.json()) as JsonResponse;
-      throw new Error(r.message || "Failed to upload photo.");
-    }
-
+    // json response
     const json = await response.json();
 
-    return json.photoFilename;
+    if (response.status !== 201) {
+      throw new ApiError(json.message || "Failed to upload image.", response.status, json.errors);
+    }
+
+    return json.imageFilename;
   },
 };

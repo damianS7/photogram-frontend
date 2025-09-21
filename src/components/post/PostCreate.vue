@@ -3,8 +3,7 @@ import { useModalStore } from "@/stores/modal";
 import { ref } from "vue";
 import { usePostStore } from "@/stores/post";
 import { useFeedStore } from "@/stores/feed";
-import Alert from "../Alert.vue";
-import { AlertType } from "@/types/AlertType";
+import Alert from "@/components/Alert.vue";
 
 // props
 defineProps<{
@@ -20,7 +19,7 @@ const modalStore = useModalStore();
 // data
 const image = ref<File | null>(null);
 const imagePreview = ref<string | null>(null);
-const caption = ref("");
+const postDescription = ref("");
 const isSubmitting = ref(false);
 const alert = ref();
 
@@ -37,30 +36,31 @@ function handleFileChange(event: Event) {
   }
 }
 
+function clearForm() {
+  isSubmitting.value = false;
+  image.value = null;
+  imagePreview.value = null;
+  postDescription.value = "";
+}
+
 async function handleSubmit() {
-  if (!image.value) return;
+  if (!image.value || !postDescription.value) {
+    return;
+  }
+
   isSubmitting.value = true;
 
-  let filename = "";
-
   try {
-    filename = await postStore.uploadPhoto(image.value);
-  } catch (error) {
-    alert.value.showMessage("Failed to upload photo.", AlertType.ERROR);
-  }
-
-  try {
-    postStore.createPost(filename, caption.value);
+    const filename = await postStore.uploadPhoto(image.value);
+    await postStore.createPost(filename, postDescription.value);
     feedStore.refreshFeed();
-    // clean
-    isSubmitting.value = false;
-    image.value = null;
-    imagePreview.value = null;
-    caption.value = "";
+    clearForm();
     closeModal();
-  } catch (error) {
-    alert.value.showMessage("Failed to create post.", AlertType.ERROR);
+  } catch (error: unknown) {
+    alert.value.handleException(error);
   }
+
+  isSubmitting.value = false;
 }
 </script>
 <template>
@@ -94,7 +94,7 @@ async function handleSubmit() {
 
       <!-- comment -->
       <textarea
-        v-model="caption"
+        v-model="postDescription"
         rows="3"
         placeholder="Write a description or comment this photo..."
         class="w-full border rounded px-3 py-2 text-sm resize-none focus:outline-none focus:ring focus:border-blue-300 flex-1"
