@@ -1,3 +1,4 @@
+import { ApiError } from "@/types/ApiError";
 import type { Follow } from "@/types/Follow";
 import type { PaginatedResponse } from "@/types/PaginatedResponse";
 
@@ -21,12 +22,18 @@ export const followService = {
       }
     );
 
+    // json response
+    const json = await response.json();
+
     if (response.status !== 200) {
-      const json = await response.json();
-      throw new Error("Failed to fetch followers. " + json.message);
+      throw new ApiError(
+        json.message || "Failed to fetch followers from customer.",
+        response.status,
+        json.errors
+      );
     }
 
-    return await response.json();
+    return json;
   },
 
   // get following for the given customer by id
@@ -39,12 +46,17 @@ export const followService = {
       }
     );
 
+    const json = await response.json();
+
     if (response.status !== 200) {
-      const json = await response.json();
-      throw new Error("Failed to fetch followings. " + json.message);
+      throw new ApiError(
+        json.message || "Failed to fetch following from customer.",
+        response.status,
+        json.errors
+      );
     }
 
-    return await response.json();
+    return json;
   },
 
   // get the follow relation between logged customer and the customer passed id
@@ -54,12 +66,13 @@ export const followService = {
       headers: authHeader(),
     });
 
+    const json = await response.json();
+
     if (response.status !== 200) {
-      const json = await response.json();
-      throw new Error("Failed to fetch follow relation. " + json.message);
+      throw new ApiError(json.message || "Failed to fetch follow.", response.status, json.errors);
     }
 
-    return await response.json();
+    return json;
   },
 
   // follow customer by id
@@ -69,12 +82,17 @@ export const followService = {
       headers: authHeader(),
     });
 
+    const json = await response.json();
+
     if (response.status !== 201) {
-      const json = await response.json();
-      throw new Error("Failed to follow. " + json.message);
+      throw new ApiError(
+        json.message || "Failed to follow customer.",
+        response.status,
+        json.errors
+      );
     }
 
-    return (await response.json()) as Follow;
+    return json;
   },
 
   // unfollow customer by id
@@ -86,7 +104,11 @@ export const followService = {
 
     if (response.status !== 204) {
       const json = await response.json();
-      throw new Error("Failed to unfollow. " + json.message);
+      throw new ApiError(
+        json.message || "Failed to unfollow customer.",
+        response.status,
+        json.errors
+      );
     }
   },
 };

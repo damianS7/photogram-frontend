@@ -1,5 +1,4 @@
 import { ApiError } from "@/types/ApiError";
-import type { ApiResponse } from "@/types/ApiResponse";
 import type { PaginatedResponse } from "@/types/PaginatedResponse";
 import type { Post } from "@/types/Post";
 
@@ -19,28 +18,35 @@ export const postService = {
       headers: authHeader(),
     });
 
-    if (response.status !== 200) {
-      const json = await response.json();
-      throw new Error("Failed to fetch posts. " + json.message);
-    }
-
-    return await response.json();
-  },
-  async getPhoto(filename: string): Promise<Blob> {
-    const response = await fetch(`${API}/posts/image/${filename}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    // json response
+    const json = await response.json();
 
     if (response.status !== 200) {
-      throw new Error("Failed to get image.");
+      throw new ApiError(json.message || "Failed to fetch posts.", response.status, json.errors);
     }
 
-    return await response.blob();
+    return json;
   },
-  async getPostPhoto(postId: number): Promise<Blob> {
+  // async getPostImage(filename: string): Promise<Blob> {
+  //   const response = await fetch(`${API}/posts/image/${filename}`, {
+  //     method: "GET",
+  //     headers: {
+  //       Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //     },
+  //   });
+
+  //   if (response.status !== 200) {
+  //     const json = await response.json();
+  //     throw new ApiError(
+  //       json.message || "Failed to fetch post image.",
+  //       response.status,
+  //       json.errors
+  //     );
+  //   }
+
+  //   return await response.blob();
+  // },
+  async getPostImage(postId: number): Promise<Blob> {
     const response = await fetch(`${API}/posts/${postId}/image`, {
       method: "GET",
       headers: {
@@ -49,7 +55,12 @@ export const postService = {
     });
 
     if (response.status !== 200) {
-      throw new Error("Failed to get image.");
+      const json = await response.json();
+      throw new ApiError(
+        json.message || "Failed to fetch post image.",
+        response.status,
+        json.errors
+      );
     }
 
     return await response.blob();
@@ -62,11 +73,14 @@ export const postService = {
       body: JSON.stringify({ imageFilename, description }),
     });
 
+    // json response
+    const json = await response.json();
+
     if (response.status !== 201) {
-      throw new Error("Failed to create a post.");
+      throw new ApiError(json.message || "Failed to create post.", response.status, json.errors);
     }
 
-    return await response.json();
+    return json;
   },
 
   async deletePost(postId: number) {
@@ -75,8 +89,11 @@ export const postService = {
       headers: authHeader(),
     });
 
+    // json response
+    const json = await response.json();
+
     if (response.status !== 204) {
-      throw new Error("Failed to delete post.");
+      throw new ApiError(json.message || "Failed to delete post.", response.status, json.errors);
     }
   },
 

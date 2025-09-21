@@ -1,3 +1,4 @@
+import { ApiError } from "@/types/ApiError";
 import type { PostLikeData } from "@/types/PostLikeData";
 
 const API = import.meta.env.VITE_APP_API_URL;
@@ -31,12 +32,18 @@ export const likeService = {
       headers: authHeader(),
     });
 
+    // json response
+    const json = await response.json();
+
     if (response.status !== 200) {
-      const json = await response.json();
-      throw new Error("Failed to get likes. " + json.message);
+      throw new ApiError(
+        json.message || "Failed to fetch like data.",
+        response.status,
+        json.errors
+      );
     }
 
-    return await response.json();
+    return json;
   },
 
   async like(postId: number): Promise<void> {
@@ -45,12 +52,14 @@ export const likeService = {
       headers: authHeader(),
     });
 
+    // json response
+    const json = await response.json();
+
     if (response.status !== 201) {
-      const json = await response.json();
-      throw new Error("Failed to like. " + json.message);
+      throw new ApiError(json.message || "Failed to like post.", response.status, json.errors);
     }
 
-    return await response.json();
+    return json;
   },
 
   async unlike(postId: number): Promise<void> {
@@ -61,7 +70,7 @@ export const likeService = {
 
     if (response.status !== 204) {
       const json = await response.json();
-      throw new Error("Failed to unlike. " + json.message);
+      throw new ApiError(json.message || "Failed to unlike post.", response.status, json.errors);
     }
   },
 };

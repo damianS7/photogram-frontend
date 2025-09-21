@@ -1,4 +1,5 @@
 // services/notificationService.ts
+import { ApiError } from "@/types/ApiError";
 import type { PaginatedResponse } from "@/types/PaginatedResponse";
 
 const API = import.meta.env.VITE_APP_API_URL;
@@ -17,12 +18,18 @@ export const notificationService = {
       headers: authHeader(),
     });
 
+    // json response
+    const json = await response.json();
+
     if (response.status !== 200) {
-      const json = await response.json();
-      throw new Error("Failed to fetch notifications. " + json.message);
+      throw new ApiError(
+        json.message || "Failed to fetch notifications.",
+        response.status,
+        json.errors
+      );
     }
 
-    return await response.json();
+    return json;
   },
   async deleteNotifications() {
     const response = await fetch(`${API}/notifications`, {
@@ -31,7 +38,12 @@ export const notificationService = {
     });
 
     if (response.status !== 204) {
-      throw new Error("Failed to delete notifications.");
+      const json = await response.json();
+      throw new ApiError(
+        json.message || "Failed to delete notifications.",
+        response.status,
+        json.errors
+      );
     }
   },
 };

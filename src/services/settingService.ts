@@ -1,3 +1,4 @@
+import { ApiError } from "@/types/ApiError";
 import type { Setting } from "@/types/Setting";
 
 const API = import.meta.env.VITE_APP_API_URL;
@@ -12,12 +13,14 @@ export const settingService = {
       },
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error("Failed to fetch settings. " + error.message);
+    // json response
+    const json = await response.json();
+
+    if (response.status !== 200) {
+      throw new ApiError(json.message || "Failed to fetch settings.", response.status, json.errors);
     }
 
-    return await response.json();
+    return json;
   },
 
   async updateSetting(id: number, setting: Setting, token: string): Promise<Setting> {
@@ -30,11 +33,14 @@ export const settingService = {
       body: JSON.stringify(setting),
     });
 
-    if (!response.ok) {
-      throw new Error("Failed to update setting.");
+    // json response
+    const json = await response.json();
+
+    if (response.status !== 200) {
+      throw new ApiError(json.message || "Failed to update setting.", response.status, json.errors);
     }
 
-    return await response.json();
+    return json;
   },
 
   async updateSettings(settings: Record<number, string>, token: string): Promise<Setting[]> {
@@ -47,10 +53,17 @@ export const settingService = {
       body: JSON.stringify({ settings }),
     });
 
-    if (!response.ok) {
-      throw new Error("Failed to update settings.");
+    // json response
+    const json = await response.json();
+
+    if (response.status !== 200) {
+      throw new ApiError(
+        json.message || "Failed to update settings.",
+        response.status,
+        json.errors
+      );
     }
 
-    return await response.json();
+    return json;
   },
 };
