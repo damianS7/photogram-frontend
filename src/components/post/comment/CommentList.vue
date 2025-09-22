@@ -3,6 +3,9 @@ import { dateUtils } from "@/utils/date";
 import { useCommentStore } from "@/stores/comment";
 import { computed, onMounted, ref, useTemplateRef } from "vue";
 import { useScrollBottonDetect } from "@/composables/useScrollBottomDetect";
+import Alert from "@/components/Alert.vue";
+import { AlertType } from "@/types/AlertType";
+
 const { toDatetime } = dateUtils();
 
 // props
@@ -14,6 +17,7 @@ const props = defineProps<{
 const commentStore = useCommentStore();
 
 // data
+const alert = ref();
 const page = ref(0);
 const comments = computed(() => {
   return commentStore.comments;
@@ -35,16 +39,30 @@ async function doOnBottom() {
   page.value += 1;
 
   // fetch comments for the next page
-  await commentStore.fetchComments(props.postId, page.value);
+  // await commentStore.fetchComments(props.postId, page.value);
+  await fetchComments(props.postId, page.value);
+}
+
+async function fetchComments(postId: number, page: number) {
+  try {
+    await commentStore.fetchComments(postId, page);
+    // await commentStore.fetchComments(7, page);
+  } catch (exception: unknown) {
+    alert.value.handleException(exception, "Failed to fetch comments.", AlertType.ERROR);
+  }
 }
 
 // lifecycle hooks
 onMounted(async () => {
-  await commentStore.fetchComments(props.postId);
+  // await commentStore.fetchComments(props.postId);
+  await fetchComments(props.postId, page.value);
 });
 </script>
 <template>
-  <div ref="commentListRef" class="flex flex-col overflow-y-auto p-4 h-full gap-2">
+  <div ref="commentListRef" class="flex flex-col overflow-y-auto p-4 h-full gap-2 relative">
+    <div class="absolute p-1 w-full">
+      <Alert ref="alert" />
+    </div>
     <TransitionGroup name="fade" tag="div" class="space-y-2">
       <slot v-if="comments.length > 0">
         <div

@@ -4,6 +4,7 @@ import { ref } from "vue";
 import { usePostStore } from "@/stores/post";
 import { useFeedStore } from "@/stores/feed";
 import Alert from "@/components/Alert.vue";
+import { AlertType } from "@/types/AlertType";
 
 // props
 defineProps<{
@@ -45,19 +46,20 @@ function clearForm() {
 
 async function handleSubmit() {
   if (!image.value || !postDescription.value) {
+    alert.value.showMessage("Post must have image and description.", AlertType.ERROR);
     return;
   }
 
   isSubmitting.value = true;
 
   try {
-    const filename = await postStore.uploadPhoto(image.value);
+    const filename = await postStore.uploadPostImage(image.value);
     await postStore.createPost(filename, postDescription.value);
     feedStore.refreshFeed();
     clearForm();
     closeModal();
-  } catch (error: unknown) {
-    alert.value.handleException(error);
+  } catch (exception: unknown) {
+    alert.value.handleException(exception, "Failed to create post.");
   }
 
   isSubmitting.value = false;

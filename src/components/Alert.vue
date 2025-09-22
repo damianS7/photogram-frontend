@@ -47,12 +47,16 @@ function showException(exception: ApiError, timeout?: number) {
   show(exception.message, AlertType.ERROR, timeout);
 }
 
-function handleException(exception: unknown, timeout?: number) {
+function handleException(exception: unknown, altMessage?: string, timeout?: number) {
+  if (!altMessage) {
+    altMessage = "Unkown error";
+  }
+
   if (exception instanceof ApiError) {
-    show(exception.message, AlertType.ERROR, timeout);
+    show(exception.message || altMessage, AlertType.ERROR, timeout);
     alert.value.errors = exception.errors || {};
   } else {
-    show("Unkown error", AlertType.ERROR, timeout);
+    show(altMessage, AlertType.ERROR, timeout);
   }
 }
 

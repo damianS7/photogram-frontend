@@ -7,8 +7,8 @@ import { useCommentStore } from "@/stores/comment";
 import CommentList from "./comment/CommentList.vue";
 import { dateUtils } from "@/utils/date";
 import { authUtils } from "@/utils/auth";
-import LikePanel from "./like/LikePanel.vue";
-import Alert from "../Alert.vue";
+import LikePanel from "@/components/post/like/LikePanel.vue";
+import Alert from "@/components/Alert.vue";
 import { useFeedStore } from "@/stores/feed";
 import { AlertType } from "@/types/AlertType";
 const { isCurrentUserOwner } = authUtils();
@@ -36,15 +36,15 @@ async function postComment() {
   // no empty comment allowed
   if (comment.value.trim() === "") {
     comment.value = "";
-    alert.value.showMessage("Empty comments are not allowed.", AlertType.INFO);
+    alert.value.showMessage("Empty comments are not allowed.", AlertType.INFO, 10);
     return;
   }
 
   try {
     await commentStore.postComment(props.post.id, comment.value);
     comment.value = "";
-  } catch (error) {
-    alert.value.showMessage("Failed to post comment.", AlertType.ERROR);
+  } catch (error: unknown) {
+    alert.value.handleException(error, "Failed to post comment.");
   }
 }
 
@@ -58,8 +58,8 @@ async function deletePost() {
     try {
       await postStore.deletePost(props.post.id);
       feedStore.refreshFeed();
-    } catch (error) {
-      alert.value.showMessage("Failed to delete post.", AlertType.ERROR);
+    } catch (exception: unknown) {
+      alert.value.handleException(exception, "Failed to delete post.");
     }
   }
 }
