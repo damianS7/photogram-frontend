@@ -12,7 +12,7 @@ const authHeader = () => {
 };
 
 export const postService = {
-  async getPosts(username: string, page?: number): Promise<PaginatedResponse> {
+  async fetchPosts(username: string, page?: number): Promise<PaginatedResponse> {
     const response = await fetch(`${API}/posts/${username}?page=${page}&sort=createdAt,DESC`, {
       method: "GET",
       headers: authHeader(),
@@ -27,25 +27,7 @@ export const postService = {
 
     return json;
   },
-  // async getPostImage(filename: string): Promise<Blob> {
-  //   const response = await fetch(`${API}/posts/image/${filename}`, {
-  //     method: "GET",
-  //     headers: {
-  //       Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //     },
-  //   });
 
-  //   if (response.status !== 200) {
-  //     const json = await response.json();
-  //     throw new ApiError(
-  //       json.message || "Failed to fetch post image.",
-  //       response.status,
-  //       json.errors
-  //     );
-  //   }
-
-  //   return await response.blob();
-  // },
   async getPostImage(postId: number): Promise<Blob> {
     const response = await fetch(`${API}/posts/${postId}/image`, {
       method: "GET",

@@ -12,10 +12,12 @@ const authHeader = () => {
 };
 
 export const profileService = {
-  async getProfileImage(customerId: number): Promise<Blob> {
+  async fetchProfileImage(customerId: number): Promise<Blob> {
     const response = await fetch(`${API}/customers/${customerId}/profile/image`, {
       method: "GET",
-      headers: authHeader(),
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     });
 
     if (response.status !== 200) {
@@ -37,7 +39,9 @@ export const profileService = {
 
     const response = await fetch(`${API}/customers/profile/image`, {
       method: "POST",
-      headers: authHeader(),
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
       body: formData,
     });
 

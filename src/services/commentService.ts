@@ -13,7 +13,7 @@ const authHeader = () => {
 };
 
 export const commentService = {
-  async getComments(postId: number, page?: number): Promise<PaginatedResponse> {
+  async fetchComments(postId: number, page?: number): Promise<PaginatedResponse> {
     const response = await fetch(
       `${API}/posts/${postId}/comments?page=${page}&sort=createdAt,DESC`,
       {

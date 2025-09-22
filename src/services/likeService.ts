@@ -18,8 +18,6 @@ export const likeService = {
     });
 
     if (response.status !== 200) {
-      // const json = await response.json();
-      // throw new Error("Failed to fetch follows. " + json.message);
       return false;
     }
 

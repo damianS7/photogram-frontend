@@ -46,8 +46,7 @@ export const authService = {
     });
 
     if (response.status !== 200) {
-      const json = await response.json();
-      throw new ApiError(json.message || "Token validation failed.", response.status, json.errors);
+      return false;
     }
 
     return true;

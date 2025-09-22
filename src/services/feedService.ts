@@ -12,7 +12,7 @@ const authHeader = () => {
 };
 
 export const feedService = {
-  async getFeed(username: string): Promise<Feed> {
+  async fetchFeed(username: string): Promise<Feed> {
     const response = await fetch(`${API}/customers/${username}/feed`, {
       method: "GET",
       headers: authHeader(),
