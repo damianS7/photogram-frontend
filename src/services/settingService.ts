@@ -2,15 +2,19 @@ import { ApiError } from "@/types/ApiError";
 import type { Setting } from "@/types/Setting";
 
 const API = import.meta.env.VITE_APP_API_URL;
+const authHeader = () => {
+  const token = localStorage.getItem("token");
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+};
 
 export const settingService = {
-  async fetchSettings(token: string): Promise<Setting[]> {
+  async fetchSettings(): Promise<Setting[]> {
     const response = await fetch(`${API}/settings`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: authHeader(),
     });
 
     // json response
@@ -23,13 +27,10 @@ export const settingService = {
     return json;
   },
 
-  async updateSetting(id: number, setting: Setting, token: string): Promise<Setting> {
+  async updateSetting(id: number, setting: Setting): Promise<Setting> {
     const response = await fetch(`${API}/settings/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: authHeader(),
       body: JSON.stringify(setting),
     });
 
@@ -43,13 +44,10 @@ export const settingService = {
     return json;
   },
 
-  async updateSettings(settings: Record<number, string>, token: string): Promise<Setting[]> {
+  async updateSettings(settings: Record<number, string>): Promise<Setting[]> {
     const response = await fetch(`${API}/settings`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: authHeader(),
       body: JSON.stringify({ settings }),
     });
 
