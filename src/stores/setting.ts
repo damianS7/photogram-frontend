@@ -28,11 +28,6 @@ export const useSettingStore = defineStore("setting", () => {
   }
 
   async function initialize() {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("JWT Token not found.");
-    }
-
     await fetchSettings().then(() => {
       initialized.value = true;
     });
