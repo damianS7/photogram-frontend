@@ -4,7 +4,7 @@ import type { CustomerRegistration } from "@/types/CustomerRegistration";
 const API = import.meta.env.VITE_APP_API_URL;
 
 export const authService = {
-  async login(email: string, password: string) {
+  async login(email: string, password: string): Promise<string> {
     const response = await fetch(`${API}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

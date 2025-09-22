@@ -3,57 +3,67 @@ import { authService } from "@/services/authService";
 import { jwtDecode } from "jwt-decode";
 import type { JwtPayload } from "@/types/JwtPayload";
 import type { CustomerRegistration } from "@/types/CustomerRegistration";
+import { computed, ref } from "vue";
 
-export const useAuthStore = defineStore("auth", {
-  state: () => ({
-    token: "",
-    initialized: false,
-  }),
+export const useAuthStore = defineStore("auth", () => {
+  const token = ref("");
+  const initialized = ref(false);
 
-  getters: {
-    isAuthenticated: (state) => state.token !== "",
-  },
+  const isAuthenticated = computed(() => token.value !== "");
 
-  actions: {
-    async login(email: string, password: string) {
-      try {
-        const token = await authService.login(email, password);
-        this.token = token;
-        localStorage.setItem("token", token);
-      } catch (error) {
-        throw error;
-      }
-    },
+  async function initialize() {
+    const storedToken = localStorage.getItem("token");
+    if (!storedToken) {
+      return;
+    }
 
-    async register(fields: CustomerRegistration) {
-      return await authService.register(fields);
-    },
+    if (!authService.validateToken(storedToken)) {
+      logout();
+      return;
+    }
 
-    async isTokenValid(token: string): Promise<boolean> {
-      return await authService.validateToken(token);
-    },
+    token.value = storedToken;
+    initialized.value = true;
+  }
 
-    async logout() {
-      this.token = "";
-      this.initialized = false;
-      localStorage.clear();
-    },
+  async function login(email: string, password: string) {
+    try {
+      const jwtToken = await authService.login(email, password);
+      token.value = jwtToken;
+      localStorage.setItem("token", jwtToken);
+    } catch (error) {
+      throw error;
+    }
+  }
 
-    async initialize() {
-      const savedToken = localStorage.getItem("token") || "";
+  async function register(fields: CustomerRegistration) {
+    return await authService.register(fields);
+  }
 
-      try {
-        await this.isTokenValid(savedToken);
-        this.token = savedToken;
-        this.initialized = true;
-      } catch {
-        this.logout();
-      }
-    },
+  async function isTokenValid(token: string): Promise<boolean> {
+    return await authService.validateToken(token);
+  }
 
-    getPayload() {
-      const token = localStorage.getItem("token");
-      return token ? jwtDecode<JwtPayload>(token) : null;
-    },
-  },
+  async function logout() {
+    token.value = "";
+    initialized.value = false;
+    localStorage.clear();
+  }
+
+  function getPayload() {
+    const token = localStorage.getItem("token");
+    return token ? jwtDecode<JwtPayload>(token) : null;
+  }
+
+  return {
+    token,
+    initialized,
+    isAuthenticated,
+    login,
+    register,
+    logout,
+    initialize,
+    getPayload,
+    isTokenValid,
+  };
 });
