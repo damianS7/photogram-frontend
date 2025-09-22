@@ -11,7 +11,7 @@ export const useCommentStore = defineStore("comment", () => {
 
   // fetch the comments for the given post by id and specific page if provided
   async function fetchComments(postId: number, page?: number): Promise<Comment[]> {
-    const paginatedPosts = (await commentService.getComments(postId, page)) as PaginatedResponse;
+    const paginatedPosts = (await commentService.fetchComments(postId, page)) as PaginatedResponse;
     pagination.value = paginatedPosts;
 
     // if the page is not zero, append to existing array

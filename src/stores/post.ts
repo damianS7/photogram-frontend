@@ -4,13 +4,13 @@ import { postService } from "@/services/postService";
 import type { Post } from "@/types/Post";
 import { ref } from "vue";
 import type { PaginatedResponse } from "@/types/PaginatedResponse";
-
+// TODO
 export const usePostStore = defineStore("post", () => {
   const posts = ref<Post[]>([]);
   const pagination = ref<PaginatedResponse>();
 
   async function fetchPosts(username: string, page?: number): Promise<Post[]> {
-    const pPosts = (await postService.getPosts(username, page)) as PaginatedResponse;
+    const pPosts = (await postService.fetchPosts(username, page)) as PaginatedResponse;
     for (const post of pPosts.content as Post[]) {
       try {
         const resource = await postService.getPostImage(post.id);

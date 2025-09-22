@@ -3,8 +3,8 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import type { Follow } from "@/types/Follow";
 import { followService } from "@/services/followService";
-import { customerService } from "@/services/customerService";
 import type { PaginatedResponse } from "@/types/PaginatedResponse";
+import { profileService } from "@/services/profileService";
 export const useFollowStore = defineStore("follow", () => {
   const followers = ref<Follow[]>([]);
   const followersPagination = ref<PaginatedResponse>();
@@ -12,7 +12,7 @@ export const useFollowStore = defineStore("follow", () => {
   const followingPagination = ref<PaginatedResponse>();
 
   // fetch followers for the given customer by id
-  async function fetchCustomerFollowers(customerId: number, page?: number) {
+  async function fetchFollowers(customerId: number, page?: number) {
     const response = (await followService.getFollowers(customerId, page)) as PaginatedResponse;
     followersPagination.value = response;
 
@@ -28,7 +28,7 @@ export const useFollowStore = defineStore("follow", () => {
     for (const follower of followers.value) {
       // fetch the photo
       try {
-        const resource = await customerService.getProfileImage(follower.followerCustomerId);
+        const resource = await profileService.fetchProfileImage(follower.followerCustomerId);
         follower.followerCustomerProfileImageFilename = URL.createObjectURL(resource);
       } catch (error) {
         follower.followerCustomerProfileImageFilename = "/public/default-avatar.png";
@@ -37,7 +37,7 @@ export const useFollowStore = defineStore("follow", () => {
   }
 
   // fetch followings for the given customer by id
-  async function fetchFollowingCustomers(customerId: number, page?: number) {
+  async function fetchFollowing(customerId: number, page?: number) {
     const response = (await followService.getFollowing(customerId, page)) as PaginatedResponse;
     followingPagination.value = response;
 
@@ -53,7 +53,7 @@ export const useFollowStore = defineStore("follow", () => {
     for (const followed of following.value) {
       // fetch the photo
       try {
-        const resource = await customerService.getProfileImage(followed.followedCustomerId);
+        const resource = await profileService.fetchProfileImage(followed.followedCustomerId);
         followed.followedCustomerProfileImageFilename = URL.createObjectURL(resource);
       } catch (error) {
         followed.followedCustomerProfileImageFilename = "/public/default-avatar.png";
@@ -81,8 +81,8 @@ export const useFollowStore = defineStore("follow", () => {
   return {
     follow,
     unfollow,
-    fetchCustomerFollowers,
-    fetchFollowingCustomers,
+    fetchCustomerFollowers: fetchFollowers,
+    fetchFollowingCustomers: fetchFollowing,
     followers,
     followersPagination,
     following,

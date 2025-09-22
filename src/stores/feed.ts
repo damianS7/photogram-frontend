@@ -3,18 +3,18 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import type { Feed } from "@/types/Feed";
 import { feedService } from "@/services/feedService";
-import { customerService } from "@/services/customerService";
+import { profileService } from "@/services/profileService";
 
 export const useFeedStore = defineStore("feed", () => {
   const feed = ref<Feed>();
 
   // fetch the feed data for the given username
   async function fetchFeed(username: string): Promise<Feed> {
-    feed.value = await feedService.getFeed(username);
+    feed.value = await feedService.fetchFeed(username);
 
     // get the photo profile
     try {
-      const resource = await customerService.getProfileImage(feed.value.customerId);
+      const resource = await profileService.fetchProfileImage(feed.value.customerId);
       feed.value.profileImageFilename = URL.createObjectURL(resource);
     } catch (error) {
       feed.value.profileImageFilename = "/public/default-avatar.png";

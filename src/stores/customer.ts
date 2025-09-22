@@ -15,22 +15,28 @@ export const useCustomerStore = defineStore("customer", () => {
   );
 
   async function initialize() {
-    customer.value = await customerService.fetchCustomer();
-
     // Set default avatar if not present
     // if (customer.value.profile.avatarFilename === null) {
-    // localStorage.setItem("profilePhotoURL", "/public/default-avatar.png");
-    // TODO return?
+    //   localStorage.setItem("profilePhotoURL", "/public/default-avatar.png");
+    //   // TODO return?
     // }
 
     try {
-      const photo = await profileService.getProfileImage(customer.value.id);
-      localStorage.setItem("profilePhotoURL", URL.createObjectURL(photo));
-    } catch (error) {
-      localStorage.setItem("profilePhotoURL", "/public/default-avatar.png");
-    }
+      customer.value = await customerService.fetchCustomer();
 
-    initialized.value = true;
+      await profileService
+        .fetchProfileImage(customer.value.id)
+        .then((blob: Blob) => {
+          localStorage.setItem("profilePhotoURL", URL.createObjectURL(blob));
+        })
+        .catch(() => {
+          localStorage.setItem("profilePhotoURL", "/public/default-avatar.png");
+        });
+
+      initialized.value = true;
+    } catch (error) {
+      throw new Error("Failed to fetch customer data.");
+    }
   }
 
   async function updateProfile(currentPassword: string, updates: Record<string, any>) {
