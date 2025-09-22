@@ -1,74 +1,72 @@
 // stores/customerStore.ts
 import { defineStore } from "pinia";
 import type { Customer } from "@/types/Customer";
-import type { Profile } from "@/types/Profile";
 import { customerService } from "@/services/customerService";
+import { computed, ref } from "vue";
+import { profileService } from "@/services/profileService";
 
-export const useCustomerStore = defineStore("customer", {
-  state: () => ({
-    customer: {} as Customer,
-    initialized: false,
-  }),
+export const useCustomerStore = defineStore("customer", () => {
+  const customer = ref({} as Customer);
+  const initialized = ref(false);
 
-  getters: {
-    getLoggedCustomer: (state) => state.customer,
-    getFullName: (state) =>
-      `${state.customer?.profile?.firstName ?? ""} ${state.customer?.profile?.lastName ?? ""}`,
-  },
+  const getLoggedCustomer = computed(() => customer.value);
+  const getFullName = computed(
+    () => `${customer.value?.profile?.firstName ?? ""} ${customer.value?.profile?.lastName ?? ""}`
+  );
 
-  actions: {
-    async initialize() {
-      const customer = await customerService.getCustomer();
-      this.setCustomer(customer);
+  async function initialize() {
+    customer.value = await customerService.fetchCustomer();
 
-      // Set default avatar if not present
-      if (customer.profile.avatarFilename === null) {
-        localStorage.setItem("profilePhotoURL", "/public/default-avatar.png");
-      }
+    // Set default avatar if not present
+    // if (customer.value.profile.avatarFilename === null) {
+    // localStorage.setItem("profilePhotoURL", "/public/default-avatar.png");
+    // TODO return?
+    // }
 
-      try {
-        const photo = await customerService.getProfileImage(customer.id);
-        localStorage.setItem("profilePhotoURL", URL.createObjectURL(photo));
-      } catch (error) {
-        localStorage.setItem("profilePhotoURL", "/public/default-avatar.png");
-      }
+    try {
+      const photo = await profileService.getProfileImage(customer.value.id);
+      localStorage.setItem("profilePhotoURL", URL.createObjectURL(photo));
+    } catch (error) {
+      localStorage.setItem("profilePhotoURL", "/public/default-avatar.png");
+    }
 
-      this.initialized = true;
-    },
+    initialized.value = true;
+  }
 
-    async updateProfile(currentPassword: string, updates: Record<string, any>) {
-      const profile = await customerService.patchProfile(currentPassword, updates);
-      this.setProfile(profile);
-    },
+  async function updateProfile(currentPassword: string, updates: Record<string, any>) {
+    const updatedProfile = await profileService.updateProfile(currentPassword, updates);
+    customer.value.profile = updatedProfile;
+  }
 
-    async updateEmail(currentPassword: string, newEmail: string) {
-      const customer = await customerService.patchEmail(currentPassword, newEmail);
-      this.setEmail(customer.email);
-    },
+  async function updateEmail(currentPassword: string, newEmail: string) {
+    const updatedCustomer = await customerService.updateEmail(currentPassword, newEmail);
+    customer.value.email = updatedCustomer.email;
+  }
 
-    async changePassword(currentPassword: string, newPassword: string) {
-      await customerService.changePassword(currentPassword, newPassword);
-    },
+  async function changePassword(currentPassword: string, newPassword: string) {
+    await customerService.updatePassword(currentPassword, newPassword);
+  }
 
-    async uploadPhoto(currentPassword: string, file: File) {
-      const blob = await customerService.uploadProfileImage(currentPassword, file);
-      localStorage.setItem("profilePhotoURL", URL.createObjectURL(blob));
-      return blob;
-    },
+  async function uploadPhoto(currentPassword: string, file: File) {
+    const blob = await profileService.uploadProfileImage(currentPassword, file);
+    localStorage.setItem("profilePhotoURL", URL.createObjectURL(blob));
+    return blob;
+  }
 
-    setCustomer(customer: Customer) {
-      this.customer = customer;
-    },
+  async function setPhoto(filename: any) {
+    customer.value.profile.avatarFilename = filename;
+  }
 
-    setEmail(email: string) {
-      this.customer.email = email;
-    },
-
-    setProfile(profile: Profile) {
-      this.customer.profile = profile;
-    },
-    async setPhoto(filename: any) {
-      this.customer.profile.avatarFilename = filename;
-    },
-  },
+  return {
+    customer,
+    getFullName,
+    getLoggedCustomer,
+    initialized,
+    initialize,
+    updateProfile,
+    updateEmail,
+    changePassword,
+    uploadPhoto,
+    setPhoto,
+  };
 });
