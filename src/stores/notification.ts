@@ -1,27 +1,54 @@
 // stores/customerStore.ts
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import type { Notification } from "@/types/Notification";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import { notificationService } from "@/services/notificationService";
+import type { PaginatedResponse } from "@/types/PaginatedResponse";
 const API = import.meta.env.VITE_APP_API_URL;
 
 export const useNotificationStore = defineStore("notification", () => {
+  let eventSource: typeof EventSourcePolyfill;
+  const initialized = ref(false);
   const notifications = ref<Notification[]>([]);
+  const pagination = ref<PaginatedResponse | null>(null);
 
-  // fetch the feed data for the given username
-  async function getNotifications(): Promise<Notification[]> {
-    return notifications.value;
+  const countNotifications = computed(() => {
+    if (!pagination.value) {
+      return notifications.value.length;
+    }
+    return pagination.value.totalElements;
+  });
+
+  function resetStore() {
+    eventSource?.close();
+    notifications.value = [];
+    pagination.value = null;
+    initialized.value = false;
+  }
+
+  async function fetchNotifications(page?: number): Promise<void> {
+    notificationService.fetchNotifications(page).then((fetchedNotifications) => {
+      notifications.value.push(...fetchedNotifications.content);
+      pagination.value = fetchedNotifications;
+      initialized.value = true;
+    });
   }
 
   async function initialize() {
-    notifications.value = [];
-    const eventSource = new EventSourcePolyfill(`${API}/notifications/stream`, {
+    resetStore();
+
+    // initial notifications (stored in db) fetch from the api
+    await fetchNotifications();
+
+    // setup the event source for server-sent events (SSE)
+    eventSource = new EventSourcePolyfill(`${API}/notifications/stream`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
 
+    // handle incoming messages (notifications)
     eventSource.onmessage = (event: MessageEvent) => {
       // console.log("🔔 Notification received:", event.data);
       try {
@@ -29,30 +56,26 @@ export const useNotificationStore = defineStore("notification", () => {
         if (typeof notification.message === "string") {
           // notifications.value.push(notification);
           notifications.value.unshift(notification);
+          pagination.value!.totalElements += 1;
         }
       } catch (error) {}
     };
-
-    notificationService.fetchNotifications().then((fetchedNotifications) => {
-      notifications.value = fetchedNotifications.content;
-    });
   }
 
   async function clearNotifications() {
     notificationService.deleteNotifications().then(() => {
       notifications.value = [];
+      pagination.value = null;
     });
-  }
-
-  async function refreshNotifications(): Promise<Notification[] | undefined> {
-    return;
   }
 
   return {
     initialize,
     notifications,
-    getNotifications,
-    refreshNotifications,
     clearNotifications,
+    countNotifications,
+    fetchNotifications,
+    pagination,
+    initialized,
   };
 });

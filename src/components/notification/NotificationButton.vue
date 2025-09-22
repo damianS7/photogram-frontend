@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from "vue";
+import { onUnmounted } from "vue";
 import { useNotificationStore } from "@/stores/notification";
 import { ref } from "vue";
 import { Bell } from "lucide-vue-next";
 import Notifications from "@/components/notification/NotificationPanel.vue";
+import { storeToRefs } from "pinia";
 
 // stores
 const notificationStore = useNotificationStore();
 const showNotifications = ref(false);
-const unreadNotifications = computed(() => notificationStore.countNotifications());
+const { countNotifications: unreadNotifications } = storeToRefs(notificationStore);
 
 // functions
 function toggleNotifications() {
