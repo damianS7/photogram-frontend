@@ -1,72 +1,42 @@
 import { defineStore } from "pinia";
 import type { Setting } from "@/types/Setting";
 import { settingService } from "@/services/settingService";
+import { ref } from "vue";
 
-export const useSettingStore = defineStore("setting", {
-  state: () => ({
-    settings: {} as Record<string, Setting>,
-    initialized: false,
-  }),
+export const useSettingStore = defineStore("setting", () => {
+  const initialized = ref(false);
+  const settings = ref<Record<string, Setting>>({} as Record<string, Setting>);
 
-  getters: {
-    getSettings: (state) => state.settings,
-  },
+  async function fetchSettings(): Promise<void> {
+    const fetchedSettings = await settingService.fetchSettings();
+    fetchedSettings.forEach((setting: Setting) => {
+      settings.value[setting.key] = setting;
+    });
+  }
 
-  actions: {
-    async fetchSettings(): Promise<void> {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("No token found");
+  async function updateSetting(id: number, setting: Setting): Promise<Setting> {
+    const updatedSetting = await settingService.updateSetting(id, setting);
+    settings.value[updatedSetting.key] = updatedSetting;
+    return updatedSetting;
+  }
 
-        const fetchedSettings = await settingService.fetchSettings(token);
-        fetchedSettings.forEach((setting: Setting) => {
-          this.settings[setting.key] = setting;
-        });
-      } catch (error: unknown) {
-        if (error instanceof Error) throw error;
-        throw new Error("Failed to fetch settings.");
-      }
-    },
+  async function updateSettings(settingsRecord: Record<number, string>): Promise<void> {
+    const updatedSettings = await settingService.updateSettings(settingsRecord);
+    updatedSettings.forEach((setting: Setting) => {
+      settings.value[setting.key] = setting;
+    });
+  }
 
-    async updateSetting(id: number, setting: Setting): Promise<Setting> {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("No token found");
+  async function initialize() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("JWT Token not found.");
+    }
 
-        const updatedSetting = await settingService.updateSetting(id, setting, token);
-        this.settings[updatedSetting.key] = updatedSetting;
-        return updatedSetting;
-      } catch (error: unknown) {
-        if (error instanceof Error) throw error;
-        throw new Error("Failed to update setting.");
-      }
-    },
+    await fetchSettings().then(() => {
+      initialized.value = true;
+    });
+  }
 
-    async updateSettings(settings: Record<number, string>): Promise<void> {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("No token found");
-
-        const updatedSettings = await settingService.updateSettings(settings, token);
-        updatedSettings.forEach((setting: Setting) => {
-          this.settings[setting.key] = setting;
-        });
-      } catch (error: unknown) {
-        if (error instanceof Error) throw error;
-        throw new Error("Failed to update settings.");
-      }
-    },
-
-    async initialize() {
-      if (this.initialized) return;
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
-      await this.fetchSettings().catch((error) => {
-        console.error(error);
-      });
-
-      this.initialized = true;
-    },
-  },
+  return { initialized, fetchSettings, updateSetting, updateSettings, initialize };
 });
