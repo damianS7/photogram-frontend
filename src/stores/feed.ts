@@ -17,7 +17,7 @@ export const useFeedStore = defineStore("feed", () => {
       const resource = await profileService.fetchProfileImage(feed.value.customerId);
       feed.value.profileImageFilename = URL.createObjectURL(resource);
     } catch (error) {
-      feed.value.profileImageFilename = "/public/default-avatar.png";
+      feed.value.profileImageFilename = "/default-avatar.jpg";
     }
 
     return feed.value;

@@ -66,7 +66,7 @@ onMounted(async () => {
             v-if="follower.followerCustomerProfileImageFilename"
             alt="Profile Image"
             :src="follower.followerCustomerProfileImageFilename"
-            @error="(e: any) => (e.target.src = '/public/default-avatar.png')"
+            @error="(e: any) => (e.target.src = '/default-avatar.jpg')"
             class="w-12 h-12 rounded-full object-cover bg-gray-300"
           />
           <router-link @click="closeModal" :to="`/@${follower.followerCustomerUsername}`">

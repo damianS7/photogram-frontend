@@ -31,7 +31,7 @@ export const useFollowStore = defineStore("follow", () => {
         const resource = await profileService.fetchProfileImage(follower.followerCustomerId);
         follower.followerCustomerProfileImageFilename = URL.createObjectURL(resource);
       } catch (error) {
-        follower.followerCustomerProfileImageFilename = "/public/default-avatar.png";
+        follower.followerCustomerProfileImageFilename = "/default-avatar.jpg";
       }
     }
   }
@@ -56,7 +56,7 @@ export const useFollowStore = defineStore("follow", () => {
         const resource = await profileService.fetchProfileImage(followed.followedCustomerId);
         followed.followedCustomerProfileImageFilename = URL.createObjectURL(resource);
       } catch (error) {
-        followed.followedCustomerProfileImageFilename = "/public/default-avatar.png";
+        followed.followedCustomerProfileImageFilename = "/default-avatar.jpg";
       }
     }
   }
