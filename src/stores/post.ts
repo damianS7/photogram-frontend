@@ -4,7 +4,7 @@ import { postService } from "@/services/postService";
 import type { Post } from "@/types/Post";
 import { ref } from "vue";
 import type { PaginatedResponse } from "@/types/PaginatedResponse";
-// TODO
+
 export const usePostStore = defineStore("post", () => {
   const posts = ref<Post[]>([]);
   const pagination = ref<PaginatedResponse>();
@@ -29,8 +29,8 @@ export const usePostStore = defineStore("post", () => {
     return posts.value;
   }
 
-  async function createPost(filename: string, description: string) {
-    const post = (await postService.createPost(filename, description)) as Post;
+  async function createPost(imageFilename: string, description: string) {
+    const post = (await postService.createPost(imageFilename, description)) as Post;
     const resource = await postService.getPostImage(post.id);
     post.imageFilename = URL.createObjectURL(resource);
     posts.value.unshift(post);

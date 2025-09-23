@@ -13,21 +13,30 @@ export function useAppInit() {
   const settingStore = useSettingStore();
   const notificationStore = useNotificationStore();
   const router = useRouter();
-  const tokenValidationInterval = 30 * 1000; // 30s
+  const tokenValidationInterval = 60 * 1000; // 60s
   let interval: NodeJS.Timeout;
   let initialized = ref(false);
 
   // functions
   async function checkIfTokenIsValid() {
     const token = authStore.token;
-    try {
-      await authStore.isTokenValid(token);
-    } catch {
+    const isTokenValid = await authStore.isTokenValid(token);
+
+    if (!isTokenValid) {
       initialized.value = false;
       await authStore.logout();
       await wait(100);
       router.push("/auth/login");
     }
+
+    // try {
+    //   await authStore.isTokenValid(token);
+    // } catch {
+    //   initialized.value = false;
+    //   await authStore.logout();
+    //   await wait(100);
+    //   router.push("/auth/login");
+    // }
   }
 
   function sleep(ms: number): Promise<void> {
