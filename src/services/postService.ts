@@ -71,10 +71,8 @@ export const postService = {
       headers: authHeader(),
     });
 
-    // json response
-    const json = await response.json();
-
     if (response.status !== 204) {
+      const json = await response.json();
       throw new ApiError(json.message || "Failed to delete post.", response.status, json.errors);
     }
   },
